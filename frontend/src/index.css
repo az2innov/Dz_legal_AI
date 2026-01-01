@@ -1,0 +1,54 @@
+/* Import des polices Google Fonts : Inter (Latin) et Cairo (Arabe) */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Directives Tailwind obligatoires */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Définition des variables de polices */
+:root {
+  --font-ar: 'Cairo', sans-serif;
+  --font-fr: 'Inter', sans-serif;
+}
+
+/* Style de base du corps de page */
+body {
+  /* 
+     - bg-gray-50 : Fond clair par défaut
+     - text-gray-900 : Texte sombre par défaut
+     - dark:bg-dark-bg : Fond sombre (défini dans tailwind.config.js) en mode nuit
+     - transition-colors : Animation fluide lors du changement de thème
+  */
+  @apply bg-gray-50 text-gray-900 dark:bg-dark-bg dark:text-dark-text transition-colors duration-200;
+  
+  /* Police par défaut (Français/Latin) */
+  font-family: var(--font-fr);
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Règle Spéciale : Quand la page passe en Arabe (Direction Right-To-Left) */
+[dir="rtl"] body {
+  font-family: var(--font-ar);
+}
+
+/* --- Esthétique de la barre de défilement (Scrollbar) --- */
+/* Pour donner un aspect "App Native" et non "Page Web" */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
