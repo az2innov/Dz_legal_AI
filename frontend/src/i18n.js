@@ -5,7 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 const resources = {
   fr: {
     translation: {
-      "brand": "Lexya",
+      "brand": "Dz Legal AI",
       
       // --- AUTHENTIFICATION ---
       "auth": {
@@ -17,13 +17,14 @@ const resources = {
         
         "role": "Je suis...",
         "role_lawyer": "Avocat",
-        "role_judge": "Magistrat (Juge/Procureur)",
+        "role_judge": "Magistrat",
         "role_notary": "Notaire",
-        "role_bailiff": "Huissier de Justice",
-        "role_corporate": "Juriste d'Entreprise",
-        "role_expert": "Expert Judiciaire",
-        "role_student": "Étudiant en Droit",
-        "role_other": "Autre / Particulier",
+        "role_bailiff": "Huissier",
+        "role_corporate": "Juriste",
+        "role_expert": "Expert",
+        "role_student": "Étudiant",
+        "role_other": "Autre",
+        "role_admin": "Administrateur",
 
         "login_btn": "Se connecter",
         "register_btn": "S'inscrire",
@@ -32,26 +33,26 @@ const resources = {
         "link_login": "Se connecter",
         "link_register": "Créer un compte",
         
-        "error_login": "Email ou mot de passe incorrect",
-        "error_register": "Erreur lors de l'inscription (Email déjà pris ?)",
-        "success_register": "Compte créé ! Vous pouvez vous connecter.",
-        
         "forgot_title": "Mot de passe oublié ?",
-        "forgot_desc": "Entrez votre email pour recevoir un lien de réinitialisation.",
+        "forgot_desc": "Entrez votre email pour recevoir un lien.",
         "send_link": "Envoyer le lien",
-        "reset_title": "Réinitialiser le mot de passe",
+        "reset_title": "Réinitialiser",
         "new_password": "Nouveau mot de passe",
-        "confirm_btn": "Confirmer le changement",
-        "back_login": "Retour à la connexion",
-        "email_sent": "Si un compte existe avec cet email, vous recevrez un lien.",
-        "password_updated": "Mot de passe mis à jour avec succès !"
+        "confirm_btn": "Confirmer",
+        "back_login": "Retour connexion",
+        "email_sent": "Si le compte existe, email envoyé.",
+        "password_updated": "Mot de passe mis à jour !"
       },
 
       // --- NAVIGATION ---
       "nav": { 
         "home": "Tableau de bord", 
         "chat": "Assistant Juridique", 
-        "docs": "Mes Documents", 
+        "docs": "Mes Documents",
+        "texts": "Textes de lois",
+        "my_group": "Mon Groupe",
+        "create_group": "Créer Groupe",
+        "admin": "Administration",
         "logout": "Déconnexion" 
       },
 
@@ -103,7 +104,7 @@ const resources = {
         "a4": "Notre IA utilise la technologie RAG (Retrieval-Augmented Generation) pour chercher la réponse dans les textes de loi avant de répondre.",
         "q5": "Comment fonctionne l'analyse de documents ?",
         "a5": "Nous utilisons l'IA Gemini de Google pour lire et comprendre vos PDF, même scannés (OCR), et en extraire les informations clés.",
-        "q6": "Comment créer un compte pour mon Cabinet ?",
+        "q6": "Comment créer un compte pour mon Groupe ?",
         "a6": "Contactez notre support pour activer le mode Organisation multi-utilisateurs.",
         "q7": "J'ai oublié mon mot de passe ?",
         "a7": "Utilisez le lien 'Mot de passe oublié' sur la page de connexion pour recevoir un lien de réinitialisation.",
@@ -114,11 +115,12 @@ const resources = {
       // --- PLANS ---
       "plans": {
           "title": "Choisissez votre plan",
-          "subtitle": "Des solutions adaptées aux étudiants, avocats et grands cabinets.",
+          "subtitle": "Des solutions adaptées aux étudiants, avocats et grands groupes.",
           "free_trial": "Essai Gratuit",
           "basic": "Basique",
           "premium": "Premium",
           "organization": "Organisation",
+          "pro": "Professionnel",
           "features_label": "Fonctionnalités :",
           "feat_chat": "Questions / Jour",
           "feat_doc": "Analyses Documents / Mois",
@@ -127,13 +129,43 @@ const resources = {
           "btn_subscribe": "Choisir ce plan",
           "contact_sales": "Contacter les ventes"
       },
-      "status": { "active": "Actif", "expired": "Expiré" }
+      "status": { "active": "Actif", "expired": "Expiré" },
+
+      // --- ADMINISTRATION ---
+      "admin": {
+        "title": "Administration Système",
+        "subtitle": "Vue d'ensemble et gestion.",
+        "tab_dashboard": "Tableau de bord",
+        "tab_users": "Utilisateurs",
+        "tab_groups": "Groupes",
+        "kpi_users": "Utilisateurs Totaux",
+        "kpi_groups": "Groupes",
+        "kpi_new": "Nouveaux (7j)",
+        "kpi_revenue": "Revenus (Est.)",
+        "latest_users": "Derniers Inscrits",
+        "expiring_subs": "Abonnements Expirants",
+        "nothing_to_report": "Rien à signaler.",
+        "col_user": "Utilisateur",
+        "col_role": "Rôle",
+        "col_status": "État",
+        "col_plan": "Plan",
+        "col_actions": "Actions",
+        "col_group": "Groupe",
+        "col_manager": "Responsable",
+        "col_members": "Membres",
+        "modal_edit_user": "Modifier Plan Utilisateur",
+        "modal_edit_group": "Modifier Plan Groupe",
+        "btn_save": "Enregistrer",
+        "user_blocked": "Bloqué",
+        "user_active": "Actif",
+        "group_suspended": "Suspendu"
+      }
     }
   },
   
   ar: {
     translation: {
-      "brand": "ليكسيا",
+      "brand": "Dz Legal AI",
       
       // --- AUTHENTIFICATION (AR) ---
       "auth": {
@@ -142,52 +174,52 @@ const resources = {
         "full_name": "الاسم الكامل",
         "email": "البريد الإلكتروني",
         "password": "كلمة المرور",
-        
         "role": "صفتي المهنية...",
         "role_lawyer": "محامي",
-        "role_judge": "قاضي / وكيل جمهورية",
+        "role_judge": "قاضي",
         "role_notary": "موثق",
-        "role_bailiff": "محضر قضائي",
-        "role_corporate": "مستشار قانوني للمؤسسة",
-        "role_expert": "خبير قضائي",
-        "role_student": "طالب حقوق",
-        "role_other": "آخر / فرد",
+        "role_bailiff": "محضر",
+        "role_corporate": "مستشار قانوني",
+        "role_expert": "خبير",
+        "role_student": "طالب",
+        "role_other": "آخر",
+        "role_admin": "مسؤول النظام",
 
-        "login_btn": "تسجيل الدخول",
-        "register_btn": "إنشاء حساب",
-        "have_account": "لديك حساب بالفعل؟",
-        "no_account": "ليس لديك حساب؟",
-        "link_login": "تسجيل الدخول",
-        "link_register": "إنشاء حساب",
-        
-        "error_login": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
-        "error_register": "خطأ في التسجيل",
-        "success_register": "تم إنشاء الحساب! يمكنك تسجيل الدخول.",
-
+        "login_btn": "دخول",
+        "register_btn": "تسجيل",
         "forgot_title": "نسيت كلمة المرور؟",
-        "forgot_desc": "أدخل بريدك الإلكتروني لتلقي رابط إعادة التعيين.",
-        "send_link": "إرسال الرابط",
-        "reset_title": "إعادة تعيين كلمة المرور",
+        "forgot_desc": "أدخل بريدك لاستعادة الحساب.",
+        "send_link": "إرسال",
+        "reset_title": "إعادة تعيين",
         "new_password": "كلمة المرور الجديدة",
-        "confirm_btn": "تأكيد التغيير",
-        "back_login": "العودة لتسجيل الدخول",
-        "email_sent": "إذا كان الحساب موجودًا، ستتلقى رابطًا.",
-        "password_updated": "تم تحديث كلمة المرور بنجاح!"
+        "confirm_btn": "تأكيد",
+        "back_login": "عودة",
+        "email_sent": "تم الإرسال.",
+        "password_updated": "تم التحديث!"
       },
 
       // --- NAVIGATION (AR) ---
-      "nav": { "home": "لوحة القيادة", "chat": "المساعد القانوني", "docs": "وثائقي", "logout": "تسجيل الخروج" },
+      "nav": { 
+        "home": "لوحة القيادة", 
+        "chat": "المساعد القانوني", 
+        "docs": "وثائقي",
+        "texts": "النصوص القانونية", 
+        "my_group": "مجموعتي", 
+        "create_group": "إنشاء مجموعة", 
+        "admin": "الإدارة", 
+        "logout": "خروج" 
+      },
 
       // --- PAGES (AR) ---
       "pages": {
         "home": { 
             "title": "لوحة القيادة", 
             "welcome": "مرحبًا بكم في المساعد الذكي في القانون الجزائري",
-            "stats_chat": "المحادثات اليومية",
-            "stats_doc": "تحليل المستندات (شهري)",
-            "stats_sub": "الاشتراك الحالي",
+            "stats_chat": "المحادثات",
+            "stats_doc": "المستندات",
+            "stats_sub": "الاشتراك",
             "ready_title": "جاهز للعمل؟",
-            "ready_desc": "انتقل إلى تبويب المساعد لطرح سؤال قانوني أو تبويب وثائقي لتحليل ملف PDF."
+            "ready_desc": "استخدم المساعد أو قم بتحليل ملف PDF."
         },
         "chat": { "title": "المساعد القانوني", "desc": "اطرح أسئلتك القانونية هنا." },
         "docs": { "title": "وثائقي", "desc": "قم بتحليل مستنداتك القانونية هنا." }
@@ -226,7 +258,7 @@ const resources = {
         "a4": "يستخدم ذكاؤنا الاصطناعي تقنية RAG للبحث في النصوص القانونية الرسمية قبل الإجابة.",
         "q5": "كيف يعمل تحليل المستندات؟",
         "a5": "نستخدم نماذج متطورة (Gemini) لقراءة وفهم ملفات PDF المصورة (OCR) واستخراج النقاط الرئيسية.",
-        "q6": "كيف أنشئ حسابًا لمكتبي (مؤسسة)؟",
+        "q6": "كيف أنشئ حسابًا لمجموعتي (مؤسسة)؟",
         "a6": "اتصل بفريق الدعم لتفعيل ميزة المؤسسة متعددة المستخدمين.",
         "q7": "نسيت كلمة المرور؟",
         "a7": "استخدم رابط 'نسيت كلمة المرور' في صفحة الدخول لاستعادة حسابك.",
@@ -242,6 +274,7 @@ const resources = {
           "basic": "أساسي",
           "premium": "بريميوم",
           "organization": "مؤسسة",
+          "pro": "مهني",
           "features_label": "المميزات :",
           "feat_chat": "أسئلة / يوم",
           "feat_doc": "تحليل مستندات / شهر",
@@ -250,7 +283,37 @@ const resources = {
           "btn_subscribe": "اختر هذه الخطة",
           "contact_sales": "اتصل بالمبيعات"
       },
-      "status": { "active": "نشط", "expired": "منتهي" }
+      "status": { "active": "نشط", "expired": "منتهي" },
+
+      // --- ADMINISTRATION (AR) ---
+      "admin": {
+        "title": "إدارة النظام",
+        "subtitle": "نظرة عامة.",
+        "tab_dashboard": "لوحة القيادة",
+        "tab_users": "المستخدمين",
+        "tab_groups": "المجموعات",
+        "kpi_users": "إجمالي المستخدمين",
+        "kpi_groups": "المجموعات",
+        "kpi_new": "جديد",
+        "kpi_revenue": "الإيرادات",
+        "latest_users": "آخر المسجلين",
+        "expiring_subs": "اشتراكات تنتهي",
+        "nothing_to_report": "لا توجد تنبيهات.",
+        "col_user": "المستخدم",
+        "col_role": "الدور",
+        "col_status": "الحالة",
+        "col_plan": "الخطة",
+        "col_actions": "إجراءات",
+        "col_group": "المجموعة",
+        "col_manager": "المسؤول",
+        "col_members": "الأعضاء",
+        "modal_edit_user": "تعديل خطة المستخدم",
+        "modal_edit_group": "تعديل خطة المجموعة",
+        "btn_save": "حفظ",
+        "user_blocked": "محظور",
+        "user_active": "نشط",
+        "group_suspended": "معلق"
+      }
     }
   }
 };
@@ -263,7 +326,6 @@ i18n
     fallbackLng: 'fr',
     interpolation: { escapeValue: false }
   }, (err, t) => {
-    // Gestion de la direction RTL/LTR
     if (i18n.language === 'ar') {
       document.documentElement.dir = 'rtl';
       document.documentElement.lang = 'ar';

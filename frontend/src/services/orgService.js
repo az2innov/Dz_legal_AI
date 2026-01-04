@@ -2,8 +2,8 @@ import axios from 'axios';
 import authService from './authService';
 
 // URL de base de votre API
-const API_URL = 'http://localhost:3001/api/organization';
-
+//const API_URL = 'http://localhost:3001/api/organization';
+const API_URL = 'http://192.168.1.117:3001/api/organization';
 // Fonction pour récupérer le token JWT
 const getConfig = () => {
     const token = authService.getToken();

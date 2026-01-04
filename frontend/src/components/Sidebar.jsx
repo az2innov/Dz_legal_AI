@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, FileText, LogOut, Shield, Building2 } from 'lucide-react'; // Import Building2
+import { LayoutDashboard, MessageSquare, FileText, LogOut, Shield, Building2, Book } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../hooks/useTheme';
 
@@ -11,9 +11,14 @@ const Sidebar = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   const getRoleLabel = (role) => {
-    switch(role) {
-      case 'admin': return 'Administrateur';
+    switch (role) {
+      case 'admin': return t('auth.role_admin') || 'Administrateur';
       case 'lawyer': return t('auth.role_lawyer') || 'Avocat';
       case 'judge': return t('auth.role_judge') || 'Magistrat';
       case 'notary': return t('auth.role_notary') || 'Notaire';
@@ -25,27 +30,36 @@ const Sidebar = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  // --- LOGIQUE D'AFFICHAGE DU MENU ---
+  let navItems = [];
 
-  const navItems = [
-    { icon: LayoutDashboard, label: t('nav.home'), path: '/' },
-    { icon: MessageSquare, label: t('nav.chat'), path: '/chat' },
-    { icon: FileText, label: t('nav.docs'), path: '/documents' },
-    // AJOUT DU LIEN ORGANISATION
-    { icon: Building2, label: (user?.organization_id ? "Mon Cabinet" : "Créer Cabinet"), path: '/organization' },
-  ];
+  if (user?.role === 'admin') {
+    // MENU ADMINISTRATEUR (Traduit)
+    navItems = [
+      { icon: Shield, label: t('nav.admin'), path: '/admin' },
+    ];
+  } else {
+    // MENU UTILISATEUR
+    navItems = [
+      { icon: LayoutDashboard, label: t('nav.home'), path: '/' },
+      { icon: MessageSquare, label: t('nav.chat'), path: '/chat' },
+      { icon: FileText, label: t('nav.docs'), path: '/documents' },
+      {
+        icon: Building2,
+        label: user?.organization_id ? t('nav.my_group') : t('nav.create_group'),
+        path: '/organization'
+      },
+    ];
+  }
 
   return (
     <aside className="w-64 bg-white dark:bg-dark-card ltr:border-r rtl:border-l dark:border-gray-800 border-gray-200 hidden md:flex flex-col transition-colors duration-200">
-      
+
       {/* LOGO DYNAMIQUE */}
       <div className="h-40 flex items-center justify-center border-b border-gray-100 dark:border-gray-800 p-4">
-        <img 
-          src={theme === 'dark' ? "/logo_d.png" : "/logo_w.png"} 
-          alt="Dz Legal AI" 
+        <img
+          src={theme === 'dark' ? "/logo_d.png" : "/logo_w.png"}
+          alt="Dz Legal AI"
           className="h-full w-auto object-contain"
         />
       </div>
@@ -57,10 +71,9 @@ const Sidebar = () => {
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-500'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+              `flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
+                ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-500'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`
             }
           >
@@ -68,23 +81,6 @@ const Sidebar = () => {
             {item.label}
           </NavLink>
         ))}
-
-        {/* LIEN ADMIN */}
-        {user && user.role === 'admin' && (
-            <NavLink
-                to="/admin"
-                className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors mt-6 border-t border-gray-100 dark:border-gray-800 ${
-                    isActive
-                    ? 'bg-red-50 text-red-600 dark:bg-red-900/20'
-                    : 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10'
-                }`
-                }
-            >
-                <Shield size={20} />
-                Administration
-            </NavLink>
-        )}
       </nav>
 
       {/* FOOTER USER */}
@@ -95,7 +91,7 @@ const Sidebar = () => {
           </div>
           <div className="overflow-hidden">
             <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
-              {user?.full_name || 'Invité'}
+              {user?.full_name}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 capitalize truncate">
               {getRoleLabel(user?.role)}
@@ -103,12 +99,8 @@ const Sidebar = () => {
           </div>
         </div>
 
-        <button 
-          onClick={handleLogout}
-          className="flex items-center gap-2 w-full text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"
-        >
-          <LogOut size={16} />
-          {t('nav.logout')}
+        <button onClick={handleLogout} className="flex items-center gap-2 w-full text-sm text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors">
+          <LogOut size={16} /> {t('nav.logout')}
         </button>
       </div>
     </aside>

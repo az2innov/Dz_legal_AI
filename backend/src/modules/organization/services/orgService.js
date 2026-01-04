@@ -1,17 +1,18 @@
 const db = require('../../../config/db');
 const crypto = require('crypto');
-const { sendEmail } = require('../../../shared/emailService');
+// IMPORT FONCTION EMAIL
+const { sendInvitationEmail } = require('../../../shared/emailService');
 
 // 1. Créer une Organisation
 async function createOrganization(userId, name, taxId, address) {
-    // On insère le owner_id dès la création
+    // Insère le propriétaire dès la création + Plan Pro par défaut
     const orgResult = await db.query(
-        "INSERT INTO organizations (name, tax_id, address, owner_id) VALUES ($1, $2, $3, $4) RETURNING *",
+        "INSERT INTO organizations (name, tax_id, address, owner_id, plan) VALUES ($1, $2, $3, $4, 'pro') RETURNING *",
         [name, taxId, address, userId]
     );
     const org = orgResult.rows[0];
 
-    // On lie l'utilisateur à l'organisation
+    // Lier l'utilisateur
     await db.query("UPDATE users SET organization_id = $1 WHERE id = $2", [org.id, userId]);
 
     return org;
@@ -31,18 +32,13 @@ async function inviteMember(adminUserId, email) {
         [orgId, email, token]
     );
 
-    const link = `${process.env.FRONTEND_URL}/register?invite=${token}`;
-    await sendEmail(
-        email,
-        "Invitation à rejoindre un Cabinet sur Dz Legal AI",
-        `Cliquez ici pour rejoindre : ${link}`,
-        `<p>Vous avez été invité à rejoindre un espace de travail.</p><p><a href="${link}">Cliquez ici pour créer votre compte et rejoindre l'équipe.</a></p>`
-    );
+    // Envoi Email (Nouveau Template)
+    await sendInvitationEmail(email, token);
 
     return { message: "Invitation envoyée." };
 }
 
-// 3. Rejoindre une organisation via Token
+// 3. Rejoindre via token
 async function joinOrganizationByToken(userId, token) {
     const inviteRes = await db.query("SELECT * FROM organization_invitations WHERE token = $1 AND status = 'pending'", [token]);
     if (inviteRes.rows.length === 0) return null; 
@@ -55,28 +51,18 @@ async function joinOrganizationByToken(userId, token) {
     return invite.organization_id;
 }
 
-// 4. Obtenir les membres de mon équipe (CORRIGÉ POUR LE FRONTEND)
+// 4. Obtenir l'équipe (Renvoie objet { ownerId, members })
 async function getTeamMembers(userId) {
-    // A. Récupérer l'ID de l'organisation
     const userRes = await db.query("SELECT organization_id FROM users WHERE id = $1", [userId]);
     const orgId = userRes.rows[0]?.organization_id;
 
-    if (!orgId) {
-        // Retourne un objet vide structuré pour éviter que le frontend plante
-        return { ownerId: null, members: [] };
-    }
+    if (!orgId) return { ownerId: null, members: [] };
 
-    // B. Récupérer le propriétaire (Chef) de cette organisation
     const orgRes = await db.query("SELECT owner_id FROM organizations WHERE id = $1", [orgId]);
     const ownerId = orgRes.rows[0]?.owner_id;
 
-    // C. Récupérer la liste des membres
-    const members = await db.query(
-        "SELECT id, full_name, email, role, created_at FROM users WHERE organization_id = $1 ORDER BY created_at ASC", 
-        [orgId]
-    );
-
-    // D. Retourner l'objet combiné { ownerId, members }
+    const members = await db.query("SELECT id, full_name, email, role, created_at FROM users WHERE organization_id = $1 ORDER BY created_at ASC", [orgId]);
+    
     return { 
         ownerId: ownerId, 
         members: members.rows 
@@ -94,7 +80,7 @@ async function removeMember(ownerId, memberIdToDelete) {
     const orgId = orgResult.rows[0].id;
 
     if (ownerId === memberIdToDelete) {
-        throw new Error("Impossible de se retirer soi-même. Vous devez supprimer le cabinet.");
+        throw new Error("Impossible de se retirer soi-même.");
     }
 
     const result = await db.query(
@@ -103,10 +89,10 @@ async function removeMember(ownerId, memberIdToDelete) {
     );
 
     if (result.rowCount === 0) {
-        throw new Error("Utilisateur introuvable ou ne fait pas partie de votre cabinet.");
+        throw new Error("Utilisateur introuvable.");
     }
 
-    return { message: "Membre retiré du cabinet avec succès." };
+    return { message: "Membre retiré." };
 }
 
 module.exports = { 

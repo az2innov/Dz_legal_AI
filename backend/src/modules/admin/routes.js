@@ -1,18 +1,54 @@
 const express = require('express');
 const router = express.Router();
-
-// Configuration BDD
 const db = require('../../config/db'); 
-
-// Middlewares
 const { protect } = require('../../middlewares/authMiddleware');
 const { requireAdmin } = require('../../middlewares/adminMiddleware');
 
-// ==========================================
-// 1. GESTION DES UTILISATEURS
-// ==========================================
+// --- 0. DASHBOARD STATS (NOUVEAU) ---
+router.get('/stats', protect, requireAdmin, async (req, res) => {
+    try {
+        // 1. Chiffres globaux
+        const counts = await db.query(`
+            SELECT 
+                (SELECT COUNT(*) FROM users) as users_count,
+                (SELECT COUNT(*) FROM organizations) as orgs_count,
+                (SELECT COUNT(*) FROM users WHERE created_at > NOW() - INTERVAL '7 days') as new_users_count
+        `);
 
-// 1.1 Liste des utilisateurs
+        // 2. Derniers inscrits
+        const recentUsers = await db.query(`
+            SELECT id, full_name, email, created_at, role 
+            FROM users 
+            ORDER BY created_at DESC 
+            LIMIT 5
+        `);
+
+        // 3. Abonnements expirants (Basé sur start_date pour l'exemple, ou end_date si vous l'avez)
+        const expiringSubs = await db.query(`
+            SELECT u.email, s.plan, s.start_date
+            FROM subscriptions s
+            JOIN users u ON s.user_id = u.id
+            WHERE s.status = 'active'
+            ORDER BY s.start_date ASC
+            LIMIT 5
+        `);
+
+        res.json({
+            status: 'success',
+            data: {
+                counts: counts.rows[0],
+                recentUsers: recentUsers.rows,
+                expiringSubs: expiringSubs.rows
+            }
+        });
+    } catch (error) {
+        console.error("Erreur stats admin:", error.message);
+        res.status(500).json({ error: "Erreur chargement stats" });
+    }
+});
+
+// --- 1. GESTION UTILISATEURS ---
+
 router.get('/users', protect, requireAdmin, async (req, res) => {
     try {
         const users = await db.query(`
@@ -23,84 +59,51 @@ router.get('/users', protect, requireAdmin, async (req, res) => {
         `);
         res.json({ status: 'success', data: users.rows });
     } catch (error) {
-        console.error("Erreur get users:", error.message);
-        res.status(500).json({ error: "Erreur lors de la récupération des utilisateurs." });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// 1.2 Mettre à jour l'abonnement (Upgrade/Downgrade)
 router.post('/upgrade', protect, requireAdmin, async (req, res) => {
     try {
         const { userId, plan } = req.body;
-        
-        if (!userId || !plan) {
-            return res.status(400).json({ error: "UserId et Plan requis" });
-        }
+        if (!userId || !plan) return res.status(400).json({ error: "Données manquantes" });
 
-        console.log(`[ADMIN] Changement plan User ${userId} vers : ${plan}`);
-
-        // 1. Vérifier si un abonnement existe déjà
         const existingSub = await db.query("SELECT id FROM subscriptions WHERE user_id = $1", [userId]);
 
         if (existingSub.rows.length > 0) {
-            // UPDATE : Mise à jour du plan existant
-            // Note: Assurez-vous que la colonne 'plan' en BDD accepte la valeur 'free' (VARCHAR)
-            await db.query(
-                "UPDATE subscriptions SET plan = $1, status = 'active' WHERE user_id = $2",
-                [plan, userId]
-            );
+            await db.query("UPDATE subscriptions SET plan = $1, status = 'active' WHERE user_id = $2", [plan, userId]);
         } else {
-            // INSERT : Création d'un nouvel abonnement
-            await db.query(
-                "INSERT INTO subscriptions (user_id, plan, status, start_date) VALUES ($1, $2, 'active', NOW())",
-                [userId, plan]
-            );
+            await db.query("INSERT INTO subscriptions (user_id, plan, status, start_date) VALUES ($1, $2, 'active', NOW())", [userId, plan]);
         }
-
-        console.log("✅ Plan mis à jour avec succès");
         res.json({ status: 'success', message: `Utilisateur passé en ${plan}` });
-
     } catch (error) {
-        console.error("❌ ERREUR SQL UPGRADE:", error.message);
-        // Cela affichera "invalid input value for enum" si vous n'avez pas fait la commande SQL
-        res.status(500).json({ error: "Erreur serveur. Vérifiez que la BDD accepte la valeur '" + req.body.plan + "'." });
+        console.error(error);
+        res.status(500).json({ error: "Erreur maj plan user" });
     }
 });
 
-// 1.3 Activer / Désactiver un utilisateur
 router.patch('/users/:id/status', protect, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const { isActive } = req.body; 
-
         await db.query("UPDATE users SET is_active = $1 WHERE id = $2", [isActive, id]);
-        
-        res.json({ status: 'success', message: isActive ? "Utilisateur activé." : "Utilisateur bloqué." });
+        res.json({ status: 'success', message: "Statut mis à jour" });
     } catch (error) {
-        console.error("Erreur status user:", error.message);
         res.status(500).json({ error: error.message });
     }
 });
 
-// 1.4 Supprimer un utilisateur
 router.delete('/users/:id', protect, requireAdmin, async (req, res) => {
     try {
-        const { id } = req.params;
-        await db.query("DELETE FROM users WHERE id = $1", [id]);
-        
-        res.json({ status: 'success', message: "Utilisateur supprimé définitivement." });
+        await db.query("DELETE FROM users WHERE id = $1", [req.params.id]);
+        res.json({ status: 'success', message: "Utilisateur supprimé" });
     } catch (error) {
-        console.error("Erreur delete user:", error.message);
         res.status(500).json({ error: error.message });
     }
 });
 
+// --- 2. GESTION ORGANISATIONS ---
 
-// ==========================================
-// 2. GESTION DES ORGANISATIONS (CABINETS)
-// ==========================================
-
-// 2.1 Liste des Organisations
 router.get('/organizations', protect, requireAdmin, async (req, res) => {
     try {
         const orgs = await db.query(`
@@ -112,55 +115,36 @@ router.get('/organizations', protect, requireAdmin, async (req, res) => {
         `);
         res.json({ status: 'success', data: orgs.rows });
     } catch (error) {
-        console.error("Erreur get orgs:", error.message);
         res.status(500).json({ error: error.message });
     }
 });
 
-// 2.2 Changer le plan d'une organisation
 router.post('/organizations/upgrade', protect, requireAdmin, async (req, res) => {
     try {
         const { orgId, plan } = req.body;
-
-        if (!orgId || !plan) {
-            return res.status(400).json({ error: "OrgId et Plan requis" });
-        }
-
-        // Assurez-vous d'avoir ajouté la colonne 'plan' dans organizations via SQL
         await db.query("UPDATE organizations SET plan = $1 WHERE id = $2", [plan, orgId]);
-
         res.json({ status: 'success', message: `Organisation passée en ${plan}` });
     } catch (error) {
-        console.error("Erreur upgrade org:", error.message);
-        res.status(500).json({ error: "Impossible de modifier l'abonnement du cabinet." });
+        res.status(500).json({ error: "Erreur maj plan org" });
     }
 });
 
-// 2.3 Activer / Désactiver une organisation
 router.patch('/organizations/:id/status', protect, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const { isActive } = req.body;
-
-        // Assurez-vous d'avoir ajouté la colonne 'is_active' dans organizations via SQL
         await db.query("UPDATE organizations SET is_active = $1 WHERE id = $2", [isActive, id]);
-        
-        res.json({ status: 'success', message: isActive ? "Cabinet activé." : "Cabinet suspendu." });
+        res.json({ status: 'success', message: "Statut org mis à jour" });
     } catch (error) {
-        console.error("Erreur status org:", error.message);
         res.status(500).json({ error: error.message });
     }
 });
 
-// 2.4 Supprimer une organisation
 router.delete('/organizations/:id', protect, requireAdmin, async (req, res) => {
     try {
-        const { id } = req.params;
-        await db.query("DELETE FROM organizations WHERE id = $1", [id]);
-        
-        res.json({ status: 'success', message: "Organisation supprimée définitivement." });
+        await db.query("DELETE FROM organizations WHERE id = $1", [req.params.id]);
+        res.json({ status: 'success', message: "Organisation supprimée" });
     } catch (error) {
-        console.error("Erreur delete org:", error.message);
         res.status(500).json({ error: error.message });
     }
 });

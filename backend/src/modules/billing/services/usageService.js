@@ -1,36 +1,57 @@
 // src/modules/billing/services/usageService.js
 const db = require('../../../config/db');
-require('dotenv').config(); // Important pour lire le .env ici si appelé isolément
+require('dotenv').config(); 
 
-// --- CONFIGURATION DES LIMITES VIA .ENV ---
-// On utilise parseInt pour convertir les chaînes du .env en nombres
-// La valeur après || est la valeur par défaut si le .env est vide
+// --- 1. CONFIGURATION DES LIMITES ---
 const LIMITS = {
     free_trial: { 
-        chat_daily: parseInt(process.env.LIMIT_FREE_CHAT_DAILY) || 3, 
-        doc_monthly: parseInt(process.env.LIMIT_FREE_DOC_MONTHLY) || 1 
+        chat_daily: parseInt(process.env.LIMIT_FREE_CHAT_DAILY) || 5, 
+        doc_monthly: parseInt(process.env.LIMIT_FREE_DOC_MONTHLY) || 2 
     },
     basic: { 
         chat_daily: parseInt(process.env.LIMIT_BASIC_CHAT_DAILY) || 50, 
         doc_monthly: parseInt(process.env.LIMIT_BASIC_DOC_MONTHLY) || 10 
     },
     premium: { 
-        chat_daily: 999999, // Illimité
-        doc_monthly: 999999 // Illimité
+        chat_daily: 1000, 
+        doc_monthly: 100 
+    },
+    // AJOUT IMPORTANT : Définition du plan PRO pour les organisations
+    pro: {
+        chat_daily: 2000, // Ou illimité
+        doc_monthly: 500
+    },
+    organization: { // Alias au cas où
+        chat_daily: 2000,
+        doc_monthly: 500
     }
 };
 
 async function getUsageRecord(userId) {
     let result = await db.query("SELECT * FROM user_usage WHERE user_id = $1", [userId]);
     if (result.rows.length === 0) {
-        result = await db.query("INSERT INTO user_usage (user_id) VALUES ($1) RETURNING *", [userId]);
+        // Initialisation si pas d'entrée
+        result = await db.query("INSERT INTO user_usage (user_id, chat_count_daily, doc_count_monthly) VALUES ($1, 0, 0) RETURNING *", [userId]);
     }
     return result.rows[0];
 }
 
+// --- 2. FONCTION CORRIGÉE : RÉCUPÉRATION DU PLAN (HÉRITAGE) ---
 async function getUserPlan(userId) {
-    const sub = await db.query("SELECT plan FROM subscriptions WHERE user_id = $1 AND status = 'active'", [userId]);
-    return sub.rows.length > 0 ? sub.rows[0].plan : 'free_trial';
+    const query = `
+        SELECT 
+            -- PRIORITÉ : Plan Organisation (si active) > Plan Perso (si actif) > Free
+            COALESCE(org.plan, sub.plan, 'free_trial') as effective_plan
+        FROM users u
+        LEFT JOIN organizations org ON u.organization_id = org.id AND org.is_active = true
+        LEFT JOIN subscriptions sub ON u.id = sub.user_id AND sub.status = 'active'
+        WHERE u.id = $1
+    `;
+
+    const result = await db.query(query, [userId]);
+    
+    // Si aucun résultat (ne devrait pas arriver), fallback sur free_trial
+    return result.rows.length > 0 ? result.rows[0].effective_plan : 'free_trial';
 }
 
 /**
@@ -38,10 +59,12 @@ async function getUserPlan(userId) {
  */
 async function checkAndIncrementChat(userId) {
     const plan = await getUserPlan(userId);
-    const limit = LIMITS[plan]?.chat_daily || 3;
+    // Si le plan 'pro' n'est pas dans LIMITS, on fallback sur free_trial (d'où l'importance de l'étape 1)
+    const limit = LIMITS[plan]?.chat_daily || LIMITS['free_trial'].chat_daily;
     const usage = await getUsageRecord(userId);
 
     const today = new Date().toISOString().split('T')[0];
+    // Gestion du cas où last_chat_reset est null
     const lastResetDate = usage.last_chat_reset ? new Date(usage.last_chat_reset).toISOString().split('T')[0] : null;
 
     // Reset journalier
@@ -52,7 +75,6 @@ async function checkAndIncrementChat(userId) {
 
     // Vérification
     if (usage.chat_count_daily >= limit) {
-        // Message d'erreur clair pour l'utilisateur
         throw new Error("Votre quota quotidien de discussions est épuisé.");
     }
 
@@ -66,13 +88,13 @@ async function checkAndIncrementChat(userId) {
  */
 async function checkAndIncrementDoc(userId) {
     const plan = await getUserPlan(userId);
-    const limit = LIMITS[plan]?.doc_monthly || 1;
+    const limit = LIMITS[plan]?.doc_monthly || LIMITS['free_trial'].doc_monthly;
     const usage = await getUsageRecord(userId);
 
     const today = new Date();
-    const lastReset = new Date(usage.last_doc_reset || 0);
+    const lastReset = usage.last_doc_reset ? new Date(usage.last_doc_reset) : new Date(0);
 
-    // Reset mensuel
+    // Reset mensuel (Si mois différent ou année différente)
     if (today.getMonth() !== lastReset.getMonth() || today.getFullYear() !== lastReset.getFullYear()) {
         await db.query("UPDATE user_usage SET doc_count_monthly = 1, last_doc_reset = CURRENT_DATE WHERE user_id = $1", [userId]);
         return { used: 1, limit };
@@ -80,7 +102,6 @@ async function checkAndIncrementDoc(userId) {
 
     // Vérification
     if (usage.doc_count_monthly >= limit) {
-        // Message d'erreur clair pour l'utilisateur
         throw new Error("Votre quota mensuel d'analyse de documents est épuisé.");
     }
 
@@ -89,13 +110,17 @@ async function checkAndIncrementDoc(userId) {
     return { used: usage.doc_count_monthly + 1, limit };
 }
 
+// Récupération des stats pour le Dashboard
 async function getUsageStats(userId) {
     const plan = await getUserPlan(userId);
     const usage = await getUsageRecord(userId);
+    
+    const limits = LIMITS[plan] || LIMITS['free_trial'];
+
     return {
-        plan,
-        chat: { used: usage.chat_count_daily, limit: LIMITS[plan]?.chat_daily || 3 },
-        docs: { used: usage.doc_count_monthly, limit: LIMITS[plan]?.doc_monthly || 1 }
+        plan, // Renvoie 'pro' ou 'free_trial'
+        chat: { used: usage.chat_count_daily || 0, limit: limits.chat_daily },
+        docs: { used: usage.doc_count_monthly || 0, limit: limits.doc_monthly }
     };
 }
 

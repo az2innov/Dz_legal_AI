@@ -30,19 +30,15 @@ const allowedOrigins = [
     process.env.FRONTEND_URL
 ];
 
+
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'La politique CORS interdit l\'accès depuis cette origine : ' + origin;
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
-    credentials: true,
-    // --- CORRECTION ICI : AJOUT DE 'PATCH' ---
+    origin: [
+        'http://localhost:5173',      // Pour votre PC (localhost)
+        'http://127.0.0.1:5173',      // Autre forme de localhost
+        'http://192.168.1.117:5173'   // <--- VOTRE IP LOCALE (Celle du téléphone)
+    ],
+    credentials: true, // Important pour les cookies/sessions si vous en utilisez
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    // ----------------------------------------
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 

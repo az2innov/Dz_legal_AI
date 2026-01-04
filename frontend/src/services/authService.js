@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // URL de l'API Backend (Assurez-vous que le port correspond à votre backend)
-const API_URL = 'http://localhost:3001/api/auth';
-
+//const API_URL = 'http://localhost:3001/api/auth';
+const API_URL = 'http://192.168.1.117:3001/api/auth';
 /**
  * Inscription d'un nouvel utilisateur
  */
