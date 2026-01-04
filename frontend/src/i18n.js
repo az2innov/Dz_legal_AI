@@ -6,15 +6,16 @@ const resources = {
   fr: {
     translation: {
       "brand": "Dz Legal AI",
-      
+
       // --- AUTHENTIFICATION ---
       "auth": {
         "login_title": "Bon retour parmi nous",
         "register_title": "Créer un nouveau compte",
         "full_name": "Nom complet",
         "email": "Email",
+        "whatsapp": "Numéro WhatsApp",
         "password": "Mot de passe",
-        
+
         "role": "Je suis...",
         "role_lawyer": "Avocat",
         "role_judge": "Magistrat",
@@ -32,7 +33,7 @@ const resources = {
         "no_account": "Pas encore de compte ?",
         "link_login": "Se connecter",
         "link_register": "Créer un compte",
-        
+
         "forgot_title": "Mot de passe oublié ?",
         "forgot_desc": "Entrez votre email pour recevoir un lien.",
         "send_link": "Envoyer le lien",
@@ -45,27 +46,27 @@ const resources = {
       },
 
       // --- NAVIGATION ---
-      "nav": { 
-        "home": "Tableau de bord", 
-        "chat": "Assistant Juridique", 
+      "nav": {
+        "home": "Tableau de bord",
+        "chat": "Assistant Juridique",
         "docs": "Mes Documents",
         "texts": "Textes de lois",
         "my_group": "Mon Groupe",
         "create_group": "Créer Groupe",
         "admin": "Administration",
-        "logout": "Déconnexion" 
+        "logout": "Déconnexion"
       },
 
       // --- PAGES ---
       "pages": {
-        "home": { 
-            "title": "Tableau de bord",
-            "welcome": "Bienvenue dans l'assistant intelligent du droit algérien.",
-            "stats_chat": "Recherches effectuées",
-            "stats_doc": "Documents analysés",
-            "stats_sub": "Abonnement",
-            "ready_title": "Prêt à travailler ?",
-            "ready_desc": "Accédez à l'onglet Assistant pour poser une question juridique ou à l'onglet Documents pour analyser un fichier PDF."
+        "home": {
+          "title": "Tableau de bord",
+          "welcome": "Bienvenue dans l'assistant intelligent du droit algérien.",
+          "stats_chat": "Recherches effectuées",
+          "stats_doc": "Documents analysés",
+          "stats_sub": "Abonnement",
+          "ready_title": "Prêt à travailler ?",
+          "ready_desc": "Accédez à l'onglet Assistant pour poser une question juridique ou à l'onglet Documents pour analyser un fichier PDF."
         },
         "chat": { "title": "Assistant Juridique", "desc": "Posez vos questions juridiques ici." },
         "docs": { "title": "Mes Documents", "desc": "Analysez vos documents juridiques ici." }
@@ -114,20 +115,20 @@ const resources = {
 
       // --- PLANS ---
       "plans": {
-          "title": "Choisissez votre plan",
-          "subtitle": "Des solutions adaptées aux étudiants, avocats et grands groupes.",
-          "free_trial": "Essai Gratuit",
-          "basic": "Basique",
-          "premium": "Premium",
-          "organization": "Organisation",
-          "pro": "Professionnel",
-          "features_label": "Fonctionnalités :",
-          "feat_chat": "Questions / Jour",
-          "feat_doc": "Analyses Documents / Mois",
-          "feat_history": "Historique des conversations",
-          "feat_support": "Support prioritaire",
-          "btn_subscribe": "Choisir ce plan",
-          "contact_sales": "Contacter les ventes"
+        "title": "Choisissez votre plan",
+        "subtitle": "Des solutions adaptées aux étudiants, avocats et grands groupes.",
+        "free_trial": "GRATUIT (Test)",
+        "basic": "BASIQUE",
+        "premium": "PREMIUM",
+        "organization": "GROUPE (Cabinet/Entreprise)",
+        "pro": "GROUPE (Cabinet/Entreprise)",
+        "features_label": "Fonctionnalités :",
+        "feat_chat": "Questions / Jour",
+        "feat_doc": "Analyses Documents / Mois",
+        "feat_history": "Historique des conversations",
+        "feat_support": "Support prioritaire",
+        "btn_subscribe": "Choisir ce plan",
+        "contact_sales": "Contacter les ventes"
       },
       "status": { "active": "Actif", "expired": "Expiré" },
 
@@ -162,17 +163,18 @@ const resources = {
       }
     }
   },
-  
+
   ar: {
     translation: {
       "brand": "Dz Legal AI",
-      
+
       // --- AUTHENTIFICATION (AR) ---
       "auth": {
         "login_title": "مرحبًا بعودتك",
         "register_title": "إنشاء حساب جديد",
         "full_name": "الاسم الكامل",
         "email": "البريد الإلكتروني",
+        "whatsapp": "رقم الواتساب",
         "password": "كلمة المرور",
         "role": "صفتي المهنية...",
         "role_lawyer": "محامي",
@@ -199,27 +201,27 @@ const resources = {
       },
 
       // --- NAVIGATION (AR) ---
-      "nav": { 
-        "home": "لوحة القيادة", 
-        "chat": "المساعد القانوني", 
+      "nav": {
+        "home": "لوحة القيادة",
+        "chat": "المساعد القانوني",
         "docs": "وثائقي",
-        "texts": "النصوص القانونية", 
-        "my_group": "مجموعتي", 
-        "create_group": "إنشاء مجموعة", 
-        "admin": "الإدارة", 
-        "logout": "خروج" 
+        "texts": "النصوص القانونية",
+        "my_group": "مجموعتي",
+        "create_group": "إنشاء مجموعة",
+        "admin": "الإدارة",
+        "logout": "خروج"
       },
 
       // --- PAGES (AR) ---
       "pages": {
-        "home": { 
-            "title": "لوحة القيادة", 
-            "welcome": "مرحبًا بكم في المساعد الذكي في القانون الجزائري",
-            "stats_chat": "المحادثات",
-            "stats_doc": "المستندات",
-            "stats_sub": "الاشتراك",
-            "ready_title": "جاهز للعمل؟",
-            "ready_desc": "استخدم المساعد أو قم بتحليل ملف PDF."
+        "home": {
+          "title": "لوحة القيادة",
+          "welcome": "مرحبًا بكم في المساعد الذكي في القانون الجزائري",
+          "stats_chat": "المحادثات",
+          "stats_doc": "المستندات",
+          "stats_sub": "الاشتراك",
+          "ready_title": "جاهز للعمل؟",
+          "ready_desc": "استخدم المساعد أو قم بتحليل ملف PDF."
         },
         "chat": { "title": "المساعد القانوني", "desc": "اطرح أسئلتك القانونية هنا." },
         "docs": { "title": "وثائقي", "desc": "قم بتحليل مستنداتك القانونية هنا." }
@@ -268,20 +270,20 @@ const resources = {
 
       // --- PLANS (AR) ---
       "plans": {
-          "title": "اختر خطتك",
-          "subtitle": "حلول تناسب الطلاب، المحامين، والشركات الكبرى.",
-          "free_trial": "تجربة مجانية",
-          "basic": "أساسي",
-          "premium": "بريميوم",
-          "organization": "مؤسسة",
-          "pro": "مهني",
-          "features_label": "المميزات :",
-          "feat_chat": "أسئلة / يوم",
-          "feat_doc": "تحليل مستندات / شهر",
-          "feat_history": "سجل المحادثات",
-          "feat_support": "دعم ذو أولوية",
-          "btn_subscribe": "اختر هذه الخطة",
-          "contact_sales": "اتصل بالمبيعات"
+        "title": "اختر خطتك",
+        "subtitle": "حلول تناسب الطلاب، المحامين، والشركات الكبرى.",
+        "free_trial": "مجاني (تجريبي)",
+        "basic": "أساسي",
+        "premium": "بريميوم",
+        "organization": "مجموعة (مكتب/شركة)",
+        "pro": "مجموعة (مكتب/شركة)",
+        "features_label": "المميزات :",
+        "feat_chat": "أسئلة / يوم",
+        "feat_doc": "تحليل مستندات / شهر",
+        "feat_history": "سجل المحادثات",
+        "feat_support": "دعم ذو أولوية",
+        "btn_subscribe": "اختر هذه الخطة",
+        "contact_sales": "اتصل بالمبيعات"
       },
       "status": { "active": "نشط", "expired": "منتهي" },
 

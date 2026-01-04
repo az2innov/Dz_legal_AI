@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../config/db'); 
+const db = require('../../config/db');
 const { protect } = require('../../middlewares/authMiddleware');
 const { requireAdmin } = require('../../middlewares/adminMiddleware');
 
@@ -17,7 +17,7 @@ router.get('/stats', protect, requireAdmin, async (req, res) => {
 
         // 2. Derniers inscrits
         const recentUsers = await db.query(`
-            SELECT id, full_name, email, created_at, role 
+            SELECT id, full_name, email, whatsapp_number, created_at, role 
             FROM users 
             ORDER BY created_at DESC 
             LIMIT 5
@@ -52,7 +52,7 @@ router.get('/stats', protect, requireAdmin, async (req, res) => {
 router.get('/users', protect, requireAdmin, async (req, res) => {
     try {
         const users = await db.query(`
-            SELECT u.id, u.email, u.full_name, u.role, u.is_active, u.created_at, s.plan, s.status
+            SELECT u.id, u.email, u.full_name, u.whatsapp_number, u.role, u.is_active, u.created_at, s.plan, s.status
             FROM users u
             LEFT JOIN subscriptions s ON u.id = s.user_id
             ORDER BY u.created_at DESC
@@ -85,7 +85,7 @@ router.post('/upgrade', protect, requireAdmin, async (req, res) => {
 router.patch('/users/:id/status', protect, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { isActive } = req.body; 
+        const { isActive } = req.body;
         await db.query("UPDATE users SET is_active = $1 WHERE id = $2", [isActive, id]);
         res.json({ status: 'success', message: "Statut mis à jour" });
     } catch (error) {

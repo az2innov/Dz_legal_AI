@@ -4,13 +4,14 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 // IMPORT DES NOUVELLES FONCTIONS EMAILS (Template Pro)
 const { sendVerificationEmail, send2FACode, sendResetPasswordEmail } = require('../../../shared/emailService');
+const { sendWhatsApp2FA } = require('../../../shared/whatsappService');
 
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 // 1. Inscription
 async function register(data) {
-    const { email, password, fullName, professionCardId, isOrg, orgName, orgTaxId, orgAddress } = data;
-    
+    const { email, password, fullName, professionCardId, isOrg, orgName, orgTaxId, orgAddress, whatsappNumber } = data;
+
     const cleanEmail = email.toLowerCase().trim();
     const cleanPassword = password.trim();
 
@@ -23,7 +24,7 @@ async function register(data) {
     const role = data.role || 'lawyer';
 
     const client = await db.pool.connect();
-    
+
     try {
         await client.query('BEGIN');
 
@@ -41,13 +42,13 @@ async function register(data) {
         // B. Création Utilisateur
         const userQuery = `
             INSERT INTO users 
-            (email, password_hash, full_name, profession_card_id, role, verification_token, is_verified, is_active, organization_id)
-            VALUES ($1, $2, $3, $4, $5, $6, false, true, $7)
-            RETURNING id, email, full_name;
+            (email, password_hash, full_name, profession_card_id, role, verification_token, is_verified, is_active, organization_id, whatsapp_number)
+            VALUES ($1, $2, $3, $4, $5, $6, false, true, $7, $8)
+            RETURNING id, email, full_name, whatsapp_number;
         `;
-        
+
         const userRes = await client.query(userQuery, [
-            cleanEmail, passwordHash, fullName, professionCardId, role, verificationToken, organizationId
+            cleanEmail, passwordHash, fullName, professionCardId, role, verificationToken, organizationId, whatsappNumber
         ]);
         const user = userRes.rows[0];
 
@@ -59,8 +60,8 @@ async function register(data) {
             await client.query("UPDATE organizations SET owner_id = $1 WHERE id = $2", [user.id, organizationId]);
         }
 
-        await client.query('COMMIT'); 
-        
+        await client.query('COMMIT');
+
         // E. Envoi Email (Nouveau Template)
         await sendVerificationEmail(cleanEmail, verificationToken);
 
@@ -95,13 +96,22 @@ async function login({ email, password }) {
     if (!isMatch) throw new Error('Email ou mot de passe incorrect.');
 
     const code = generateCode();
-    const expires = new Date(Date.now() + 10 * 60000); 
+    const expires = new Date(Date.now() + 10 * 60000);
     await db.query("UPDATE users SET two_factor_secret = $1, two_factor_expires = $2 WHERE id = $3", [code, expires, user.id]);
-    
-    // Email 2FA (Nouveau Template)
-    await send2FACode(cleanEmail, code);
 
-    return { requires2FA: true, userId: user.id, email: user.email };
+    // Envoi du Code (WhatsApp uniquement)
+    if (!user.whatsapp_number) {
+        throw new Error("Aucun numéro WhatsApp configuré pour ce compte. Veuillez contacter le support.");
+    }
+
+    await sendWhatsApp2FA(user.whatsapp_number, code);
+
+    return {
+        requires2FA: true,
+        userId: user.id,
+        email: user.email,
+        whatsappNumber: user.whatsapp_number
+    };
 }
 
 // 4. Vérification 2FA + Héritage Plan
@@ -129,7 +139,7 @@ async function verifyTwoFactor(userId, code) {
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
     );
-    
+
     delete user.password_hash;
     delete user.two_factor_secret;
     return { user, token };
@@ -153,12 +163,12 @@ async function getMe(userId) {
 async function forgotPassword(email) {
     const cleanEmail = email.toLowerCase().trim();
     const userResult = await db.query('SELECT id, is_active FROM users WHERE email = $1', [cleanEmail]);
-    
+
     if (userResult.rows.length > 0 && userResult.rows[0].is_active) {
         const token = crypto.randomBytes(32).toString('hex');
         const expires = new Date(Date.now() + 60 * 60000);
         await db.query("UPDATE users SET reset_password_token = $1, reset_password_expires = $2 WHERE email = $3", [token, expires, cleanEmail]);
-        
+
         // Email Reset (Nouveau Template)
         await sendResetPasswordEmail(cleanEmail, token);
     }

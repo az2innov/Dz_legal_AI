@@ -23,7 +23,15 @@ const login = async (req, res) => {
         const result = await authService.login(req.body);
         // Si login réussit mais demande 2FA
         if (result.requires2FA) {
-            return res.json({ status: '2fa_required', userId: result.userId, message: "Code envoyé par email." });
+            const message = result.whatsappNumber
+                ? `Code envoyé sur votre WhatsApp (${result.whatsappNumber})`
+                : "Code envoyé par email.";
+            return res.json({
+                status: '2fa_required',
+                userId: result.userId,
+                whatsappNumber: result.whatsappNumber,
+                message
+            });
         }
         res.json({ status: 'success', data: result });
     } catch (error) {
@@ -65,7 +73,7 @@ const getMe = async (req, res) => {
         // On récupère l'ID depuis le token (middleware protect)
         // Mais on va chercher les infos fraiches (et le bon plan) en BDD
         const user = await authService.getMe(req.user.id);
-        
+
         if (!user) {
             return res.status(404).json({ error: "Utilisateur non trouvé" });
         }

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import authService from './authService';
 
-const API_URL = 'http://localhost:3001/api/assistant';
+// const API_URL = 'http://localhost:3001/api/assistant';
+const API_URL = 'http://192.168.1.117:3001/api/assistant';
 
 // Configuration automatique du Header avec le Token
 const getAuthHeaders = () => {

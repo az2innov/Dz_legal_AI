@@ -1,29 +1,28 @@
 // src/modules/billing/services/usageService.js
 const db = require('../../../config/db');
-require('dotenv').config(); 
+require('dotenv').config();
 
 // --- 1. CONFIGURATION DES LIMITES ---
 const LIMITS = {
-    free_trial: { 
-        chat_daily: parseInt(process.env.LIMIT_FREE_CHAT_DAILY) || 5, 
-        doc_monthly: parseInt(process.env.LIMIT_FREE_DOC_MONTHLY) || 2 
+    free_trial: {
+        chat_daily: 3,
+        doc_monthly: 1
     },
-    basic: { 
-        chat_daily: parseInt(process.env.LIMIT_BASIC_CHAT_DAILY) || 50, 
-        doc_monthly: parseInt(process.env.LIMIT_BASIC_DOC_MONTHLY) || 10 
+    basic: {
+        chat_daily: 20,
+        doc_monthly: 10
     },
-    premium: { 
-        chat_daily: 1000, 
-        doc_monthly: 100 
+    premium: {
+        chat_daily: 200,
+        doc_monthly: 50
     },
-    // AJOUT IMPORTANT : Définition du plan PRO pour les organisations
     pro: {
-        chat_daily: 2000, // Ou illimité
-        doc_monthly: 500
+        chat_daily: 1000, // Groupe
+        doc_monthly: 200
     },
-    organization: { // Alias au cas où
-        chat_daily: 2000,
-        doc_monthly: 500
+    organization: {
+        chat_daily: 1000,
+        doc_monthly: 200
     }
 };
 
@@ -49,7 +48,7 @@ async function getUserPlan(userId) {
     `;
 
     const result = await db.query(query, [userId]);
-    
+
     // Si aucun résultat (ne devrait pas arriver), fallback sur free_trial
     return result.rows.length > 0 ? result.rows[0].effective_plan : 'free_trial';
 }
@@ -114,7 +113,7 @@ async function checkAndIncrementDoc(userId) {
 async function getUsageStats(userId) {
     const plan = await getUserPlan(userId);
     const usage = await getUsageRecord(userId);
-    
+
     const limits = LIMITS[plan] || LIMITS['free_trial'];
 
     return {
