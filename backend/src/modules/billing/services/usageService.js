@@ -2,35 +2,38 @@
 const db = require('../../../config/db');
 require('dotenv').config();
 
-// --- 1. CONFIGURATION DES LIMITES ---
+// --- 1. CONFIGURATION DES LIMITES (Mensuelles) ---
+// Les limites représentent maintenant le nombre de QUESTIONS par mois
 const LIMITS = {
     free_trial: {
-        chat_daily: 3,
-        doc_monthly: 1
+        chat_monthly: 10,       // 10 questions/mois (gratuit - test)
+        doc_monthly: 1          // 1 doc/mois
     },
     basic: {
-        chat_daily: 20,
-        doc_monthly: 10
+        chat_monthly: 600,      // 600 questions/mois
+        doc_monthly: 10         // 10 docs/mois
     },
     premium: {
-        chat_daily: 200,
-        doc_monthly: 50
+        chat_monthly: 6000,     // 6000 questions/mois
+        doc_monthly: 50         // 50 docs/mois
     },
     pro: {
-        chat_daily: 1000, // Groupe
-        doc_monthly: 200
+        chat_monthly: 30000,    // 30000 questions/mois (partagées)
+        doc_monthly: 200        // 200 docs/mois (partagés)
     },
     organization: {
-        chat_daily: 1000,
-        doc_monthly: 200
+        chat_monthly: 30000,    // 30000 questions/mois (partagées)
+        doc_monthly: 200        // 200 docs/mois (partagés)
     }
 };
 
 async function getUsageRecord(userId) {
-    let result = await db.query("SELECT * FROM user_usage WHERE user_id = $1", [userId]);
+    let result = await db.query("SELECT * FROM user_usage WHERE user_id = ?", [userId]);
     if (result.rows.length === 0) {
         // Initialisation si pas d'entrée
-        result = await db.query("INSERT INTO user_usage (user_id, chat_count_daily, doc_count_monthly) VALUES ($1, 0, 0) RETURNING *", [userId]);
+        const initRes = await db.query("INSERT INTO user_usage (user_id, chat_count_daily, doc_count_monthly) VALUES (?, 0, 0)", [userId]);
+        const insertId = initRes.rows.insertId;
+        result = await db.query("SELECT * FROM user_usage WHERE id = ?", [insertId]);
     }
     return result.rows[0];
 }
@@ -39,12 +42,12 @@ async function getUsageRecord(userId) {
 async function getUserPlan(userId) {
     const query = `
         SELECT 
-            -- PRIORITÉ : Plan Organisation (si active) > Plan Perso (si actif) > Free
-            COALESCE(org.plan, sub.plan, 'free_trial') as effective_plan
+            -- PRIORITÉ : Plan Organisation (si active) > Plan User (Admin) > Subscriptions > Free
+            COALESCE(org.plan, u.plan, sub.plan, 'free_trial') as effective_plan
         FROM users u
         LEFT JOIN organizations org ON u.organization_id = org.id AND org.is_active = true
         LEFT JOIN subscriptions sub ON u.id = sub.user_id AND sub.status = 'active'
-        WHERE u.id = $1
+        WHERE u.id = ?
     `;
 
     const result = await db.query(query, [userId]);
@@ -57,28 +60,29 @@ async function getUserPlan(userId) {
  * Vérifie le Quota CHAT
  */
 async function checkAndIncrementChat(userId) {
+    console.log(`[QUOTA v2.0] checkAndIncrementChat called for user ${userId}`);
     const plan = await getUserPlan(userId);
-    // Si le plan 'pro' n'est pas dans LIMITS, on fallback sur free_trial (d'où l'importance de l'étape 1)
     const limit = LIMITS[plan]?.chat_daily || LIMITS['free_trial'].chat_daily;
+
+    // 1. Reset automatique via SQL si nouvelle journée
+    await db.query(`
+        UPDATE user_usage 
+        SET chat_count_daily = 0, last_chat_reset = CURRENT_DATE 
+        WHERE user_id = ? 
+        AND (last_chat_reset IS NULL OR last_chat_reset < CURRENT_DATE)
+    `, [userId]);
+
+    // 2. Lecture usage à jour (APRÈS reset éventuel)
     const usage = await getUsageRecord(userId);
 
-    const today = new Date().toISOString().split('T')[0];
-    // Gestion du cas où last_chat_reset est null
-    const lastResetDate = usage.last_chat_reset ? new Date(usage.last_chat_reset).toISOString().split('T')[0] : null;
-
-    // Reset journalier
-    if (today !== lastResetDate) {
-        await db.query("UPDATE user_usage SET chat_count_daily = 1, last_chat_reset = CURRENT_DATE WHERE user_id = $1", [userId]);
-        return { used: 1, limit };
-    }
-
-    // Vérification
+    // 3. Vérification quota
     if (usage.chat_count_daily >= limit) {
         throw new Error("Votre quota quotidien de discussions est épuisé.");
     }
 
-    // Incrément
-    await db.query("UPDATE user_usage SET chat_count_daily = chat_count_daily + 1 WHERE user_id = $1", [userId]);
+    // 4. Incrément
+    await db.query("UPDATE user_usage SET chat_count_daily = chat_count_daily + 1 WHERE user_id = ?", [userId]);
+
     return { used: usage.chat_count_daily + 1, limit };
 }
 
@@ -88,38 +92,65 @@ async function checkAndIncrementChat(userId) {
 async function checkAndIncrementDoc(userId) {
     const plan = await getUserPlan(userId);
     const limit = LIMITS[plan]?.doc_monthly || LIMITS['free_trial'].doc_monthly;
+
+    // 1. Reset automatique via SQL (Mois différent)
+    await db.query(`
+        UPDATE user_usage 
+        SET doc_count_monthly = 0, last_doc_reset = CURRENT_DATE 
+        WHERE user_id = ? 
+        AND (
+            last_doc_reset IS NULL 
+            OR DATE_FORMAT(last_doc_reset, '%Y-%m') != DATE_FORMAT(CURRENT_DATE, '%Y-%m')
+        )
+    `, [userId]);
+
+    // 2. Lecture usage à jour (APRÈS reset éventuel)
     const usage = await getUsageRecord(userId);
 
-    const today = new Date();
-    const lastReset = usage.last_doc_reset ? new Date(usage.last_doc_reset) : new Date(0);
-
-    // Reset mensuel (Si mois différent ou année différente)
-    if (today.getMonth() !== lastReset.getMonth() || today.getFullYear() !== lastReset.getFullYear()) {
-        await db.query("UPDATE user_usage SET doc_count_monthly = 1, last_doc_reset = CURRENT_DATE WHERE user_id = $1", [userId]);
-        return { used: 1, limit };
-    }
-
-    // Vérification
+    // 3. Vérification quota
     if (usage.doc_count_monthly >= limit) {
         throw new Error("Votre quota mensuel d'analyse de documents est épuisé.");
     }
 
-    // Incrément
-    await db.query("UPDATE user_usage SET doc_count_monthly = doc_count_monthly + 1 WHERE user_id = $1", [userId]);
+    // 4. Incrément
+    await db.query("UPDATE user_usage SET doc_count_monthly = doc_count_monthly + 1 WHERE user_id = ?", [userId]);
+
     return { used: usage.doc_count_monthly + 1, limit };
 }
 
 // Récupération des stats pour le Dashboard
 async function getUsageStats(userId) {
     const plan = await getUserPlan(userId);
-    const usage = await getUsageRecord(userId);
+
+    // ✅ COMPTAGE RÉEL depuis les tables sources (pas de compteur user_usage)
+
+    // 1. Compter les MESSAGES (questions) posés CE MOIS-CI par l'utilisateur
+    // On compte uniquement les messages role='user' (pas les réponses de l'IA)
+    const chatResult = await db.query(`
+        SELECT COUNT(*) as count 
+        FROM chat_messages cm
+        JOIN chat_sessions cs ON cm.session_id = cs.id
+        WHERE cs.user_id = ? 
+        AND cm.role = 'user'
+        AND DATE_FORMAT(cm.created_at, '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
+    `, [userId]);
+    const chatCountThisMonth = chatResult.rows[0]?.count || 0;
+
+    // 2. Compter les DOCUMENTS créés CE MOIS-CI depuis user_documents
+    const docResult = await db.query(`
+        SELECT COUNT(*) as count 
+        FROM user_documents 
+        WHERE user_id = ? 
+        AND DATE_FORMAT(created_at, '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
+    `, [userId]);
+    const docCountThisMonth = docResult.rows[0]?.count || 0;
 
     const limits = LIMITS[plan] || LIMITS['free_trial'];
 
     return {
-        plan, // Renvoie 'pro' ou 'free_trial'
-        chat: { used: usage.chat_count_daily || 0, limit: limits.chat_daily },
-        docs: { used: usage.doc_count_monthly || 0, limit: limits.doc_monthly }
+        plan,
+        chat: { used: chatCountThisMonth, limit: limits.chat_monthly },
+        docs: { used: docCountThisMonth, limit: limits.doc_monthly }
     };
 }
 

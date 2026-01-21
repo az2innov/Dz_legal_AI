@@ -1,66 +1,126 @@
 const db = require('../../../config/db');
 
-// 1. Créer une nouvelle session (nouvelle conversation)
+// 1. Créer une nouvelle session
 async function createSession(userId, title) {
+    const sUserId = parseInt(userId);
+    const defaultTitle = title || 'Nouvelle conversation';
     const result = await db.query(
-        "INSERT INTO chat_sessions (user_id, title) VALUES ($1, $2) RETURNING *",
-        [userId, title || 'Nouvelle conversation']
+        "INSERT INTO chat_sessions (user_id, title) VALUES (?, ?)",
+        [sUserId, defaultTitle]
     );
-    return result.rows[0];
+    const sessionId = result.rows.insertId;
+    const sessionRes = await db.query("SELECT * FROM chat_sessions WHERE id = ?", [sessionId]);
+    return sessionRes.rows[0];
 }
 
-// 2. Récupérer toutes les sessions d'un utilisateur (pour la Sidebar)
+// 2. Récupérer toutes les sessions d'un utilisateur
 async function getUserSessions(userId) {
+    const sUserId = parseInt(userId);
     const result = await db.query(
-        "SELECT * FROM chat_sessions WHERE user_id = $1 ORDER BY updated_at DESC",
-        [userId]
+        "SELECT * FROM chat_sessions WHERE user_id = ? ORDER BY updated_at DESC",
+        [sUserId]
     );
     return result.rows;
 }
 
-// 3. Récupérer les messages d'une session
+// 3. Récupérer les messages d'une session (FORCAGE TYPES)
 async function getSessionMessages(sessionId, userId) {
-    // Sécurité : on vérifie que la session appartient bien au user
+    const sId = parseInt(sessionId);
+    const uId = parseInt(userId);
+
     const sessionCheck = await db.query(
-        "SELECT id FROM chat_sessions WHERE id = $1 AND user_id = $2",
-        [sessionId, userId]
+        "SELECT id FROM chat_sessions WHERE id = ? AND user_id = ?",
+        [sId, uId]
     );
-    
-    if (sessionCheck.rows.length === 0) throw new Error("Session introuvable ou accès refusé.");
+
+    if (sessionCheck.rows.length === 0) {
+        console.warn(`[GET] Session ${sId} non trouvée en BDD pour User ${uId}`);
+        throw new Error("Session introuvable.");
+    }
 
     const result = await db.query(
-        "SELECT * FROM chat_messages WHERE session_id = $1 ORDER BY created_at ASC",
-        [sessionId]
+        "SELECT * FROM chat_messages WHERE session_id = ? ORDER BY created_at ASC",
+        [sId]
     );
-    return result.rows;
+
+    return result.rows.map(msg => {
+        let parsedSources = [];
+        if (msg.sources) {
+            if (Array.isArray(msg.sources)) {
+                parsedSources = msg.sources;
+            } else if (typeof msg.sources === 'string' && msg.sources.trim() !== "") {
+                try {
+                    const parsed = JSON.parse(msg.sources);
+                    parsedSources = Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    parsedSources = [];
+                }
+            }
+        }
+        msg.sources = parsedSources;
+        return msg;
+    });
 }
 
-// 4. Sauvegarder un message (User ou Assistant)
+// 4. Sauvegarder un message
 async function saveMessage(sessionId, role, content, sources = []) {
+    const sId = parseInt(sessionId);
+    const safeSources = Array.isArray(sources) ? sources : [];
+
     const result = await db.query(
-        `INSERT INTO chat_messages (session_id, role, content, sources) 
-         VALUES ($1, $2, $3, $4) RETURNING *`,
-        [sessionId, role, content, JSON.stringify(sources)]
+        "INSERT INTO chat_messages (session_id, role, content, sources) VALUES (?, ?, ?, ?)",
+        [sId, role, content, JSON.stringify(safeSources)]
     );
-    
-    // Mettre à jour la date de modif de la session (pour l'ordre de tri)
-    await db.query("UPDATE chat_sessions SET updated_at = NOW() WHERE id = $1", [sessionId]);
-    
-    return result.rows[0];
+    const messageId = result.rows.insertId;
+    await db.query("UPDATE chat_sessions SET updated_at = NOW() WHERE id = ?", [sId]);
+
+    const msgRes = await db.query("SELECT * FROM chat_messages WHERE id = ?", [messageId]);
+    const savedMsg = msgRes.rows[0];
+
+    if (savedMsg) {
+        try {
+            savedMsg.sources = typeof savedMsg.sources === 'string' ? JSON.parse(savedMsg.sources) : (savedMsg.sources || []);
+        } catch (e) {
+            savedMsg.sources = [];
+        }
+    }
+    return savedMsg;
 }
 
-// 5. Mettre à jour le titre d'une session (ex: après la 1ère question)
+// 5. Mettre à jour le titre
 async function updateSessionTitle(sessionId, title) {
-    await db.query("UPDATE chat_sessions SET title = $1 WHERE id = $2", [title, sessionId]);
+    const sId = parseInt(sessionId);
+    await db.query("UPDATE chat_sessions SET title = ? WHERE id = ?", [title, sId]);
 }
 
-// 6. Supprimer une session
+// 6. Supprimer une session (VERSION FINALE ULTRA-LOGUÉE)
 async function deleteSession(sessionId, userId) {
-    const result = await db.query(
-        "DELETE FROM chat_sessions WHERE id = $1 AND user_id = $2 RETURNING id",
-        [sessionId, userId]
-    );
-    return result.rows[0];
+    const sId = parseInt(sessionId);
+    const uId = parseInt(userId);
+
+    console.log(`[DELETE] Exécution suppression pour Session:${sId}, User:${uId}`);
+
+    // A. On vérifie si elle existe
+    const findRes = await db.query("SELECT id FROM chat_sessions WHERE id = ? AND user_id = ?", [sId, uId]);
+
+    if (findRes.rows.length === 0) {
+        console.error(`[DELETE] ÉCHEC: La session ${sId} n'existe pas pour l'user ${uId}`);
+        throw new Error("Session introuvable.");
+    }
+
+    // B. Suppression des messages (on ne vérifie pas rowCount car il peut y avoir 0 messages)
+    await db.query("DELETE FROM chat_messages WHERE session_id = ?", [sId]);
+
+    // C. Suppression de la session
+    const res = await db.query("DELETE FROM chat_sessions WHERE id = ? AND user_id = ?", [sId, uId]);
+
+    if (res.rowCount === 0) {
+        console.error(`[DELETE] ÉCHEC CRITIQUE: SQL n'a supprimé aucune ligne pour ID ${sId}`);
+        throw new Error("Erreur SQL lors de la suppression.");
+    }
+
+    console.log(`[DELETE] SUCCÈS: Session ${sId} totalement supprimée.`);
+    return { id: sId };
 }
 
 module.exports = {

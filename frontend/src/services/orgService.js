@@ -1,14 +1,13 @@
 import axios from 'axios';
 import authService from './authService';
+import { API_ENDPOINTS } from '../utils/apiConfig';
 
-// URL de base de votre API
-//const API_URL = 'http://localhost:3001/api/organization';
-const API_URL = 'http://192.168.1.117:3001/api/organization';
+const API_URL = API_ENDPOINTS.organization;
 // Fonction pour récupérer le token JWT
 const getConfig = () => {
     const token = authService.getToken();
     return {
-        headers: { 
+        headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
@@ -27,7 +26,7 @@ const orgService = {
         const response = await axios.get(`${API_URL}/team`, getConfig());
         // Avant : return response.data.data; (qui était un tableau)
         // Maintenant : response.data.data contient { ownerId, members }
-        return response.data.data; 
+        return response.data.data;
     },
 
     // 3. Inviter un membre

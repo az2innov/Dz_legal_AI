@@ -55,12 +55,12 @@ const Sidebar = () => {
   return (
     <aside className="w-64 bg-white dark:bg-dark-card ltr:border-r rtl:border-l dark:border-gray-800 border-gray-200 hidden md:flex flex-col transition-colors duration-200">
 
-      {/* LOGO DYNAMIQUE */}
       <div className="h-40 flex items-center justify-center border-b border-gray-100 dark:border-gray-800 p-4">
         <img
-          src={theme === 'dark' ? "/logo_d.png" : "/logo_w.png"}
+          src="/logo_w.png"
           alt="Dz Legal AI"
           className="h-full w-auto object-contain"
+          onError={(e) => { e.target.src = "/logo_d.png" }}
         />
       </div>
 

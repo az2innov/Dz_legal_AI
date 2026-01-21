@@ -1,13 +1,36 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+// Configuration du transporteur
+const port = parseInt(process.env.EMAIL_PORT, 10) || 2525;
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || "sandbox.smtp.mailtrap.io",
-  port: process.env.EMAIL_PORT || 2525,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+    host: process.env.EMAIL_HOST || "sandbox.smtp.mailtrap.io",
+    port: port,
+    secure: port === 465, // true for 465, false for other ports
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    // Debug options pour logs console détaillés
+    logger: true,
+    debug: true
+});
+
+// Vérification immédiate de la connexion SMTP au démarrage (Console uniquement pour éviter les crashs FS)
+transporter.verify(function (error, success) {
+    if (error) {
+        console.error("🚨 ERREUR CRITIQUE SMTP (Connection Test):");
+        console.error(error);
+        console.error("Configuration utilisée:", {
+            host: process.env.EMAIL_HOST,
+            port: port,
+            secure: port === 465,
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS ? "****" : "MANQUANT"
+        });
+    } else {
+        console.log("✅ Serveur SMTP prêt à envoyer des messages.");
+    }
 });
 
 // --- TEMPLATE HTML PROFESSIONNEL ---
@@ -55,22 +78,35 @@ const getHtmlTemplate = (title, bodyContent, actionLink = null, actionText = nul
     `;
 };
 
-// Fonction de base (interne)
+const fs = require('fs');
+const path = require('path');
+// Le log sera créé directement à la racine du dossier backend sur Octenium
+const debugFile = path.join(process.cwd(), 'debug_emails.txt');
+
+// Fonction d'envoi de base
 const sendBaseEmail = async (to, subject, text, html) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"Dz Legal AI" <${process.env.EMAIL_FROM || 'no-reply@dzlegal.ai'}>`,
-      to, subject, text, html
-    });
-    console.log("📧 Email envoyé à %s : %s", to, info.messageId);
-    return info;
-  } catch (error) {
-    console.error("🚨 Erreur envoi email :", error);
-    // On ne throw pas l'erreur pour ne pas bloquer l'app si le mail échoue
-  }
+    try {
+        let sender = process.env.EMAIL_FROM || 'no-reply@dzlegal.ai';
+        // Sécurité : si EMAIL_FROM n'est pas un email (ex: sandbox.mailtrap.io), on force une adresse valide
+        if (!sender.includes('@')) sender = 'no-reply@dzlegal.ai';
+
+        const fromAddress = sender.includes('<') ? sender : `"Dz Legal AI" <${sender}>`;
+
+        const info = await transporter.sendMail({
+            from: fromAddress,
+            to, subject, text, html
+        });
+        const msg = `[${new Date().toISOString()}] ✅ SUCCÈS : Email envoyé à ${to} (Sender: ${fromAddress})\n`;
+        try { fs.appendFileSync(debugFile, msg); } catch (e) { }
+        return info;
+    } catch (error) {
+        const msg = `[${new Date().toISOString()}] ❌ ERREUR : Envoi à ${to} échoué : ${error.message}\n`;
+        try { fs.appendFileSync(debugFile, msg); } catch (e) { }
+        throw error;
+    }
 };
 
-// --- FONCTIONS EXPORTÉES (API PROPRE) ---
+// --- FONCTIONS EXPORTÉES ---
 
 const sendVerificationEmail = async (email, token) => {
     const link = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
@@ -89,7 +125,7 @@ const send2FACode = async (email, code) => {
         `<p>Une tentative de connexion a été détectée sur votre compte.</p>
          <p>Voici votre code de sécurité unique :</p>
          <div class="code-box">${code}</div>
-         <p>Ce code expire dans 10 minutes. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>`
+         <p>Ce code expire dans 2 minutes. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>`
     );
     await sendBaseEmail(email, `Votre code : ${code}`, `Code: ${code}`, html);
 };
@@ -107,6 +143,7 @@ const sendResetPasswordEmail = async (email, token) => {
 
 const sendInvitationEmail = async (email, token) => {
     const link = `${process.env.FRONTEND_URL}/register?invite=${token}`;
+    console.log(`[EmailService] Preparing invitation for ${email} with link: ${link}`);
     const html = getHtmlTemplate(
         "Invitation à rejoindre un Groupe",
         "<p>Vous avez été invité à collaborer sur l'espace de travail d'un cabinet juridique sur Dz Legal AI.</p><p>Créez votre compte dès maintenant pour accéder aux dossiers partagés.</p>",
@@ -116,13 +153,12 @@ const sendInvitationEmail = async (email, token) => {
     await sendBaseEmail(email, "Invitation - Dz Legal AI", `Lien: ${link}`, html);
 };
 
-// Export pour compatibilité si 'sendEmail' est utilisé ailleurs
-const sendEmail = sendBaseEmail; 
+const sendEmail = sendBaseEmail;
 
-module.exports = { 
-    sendEmail, 
-    sendVerificationEmail, 
-    send2FACode, 
-    sendResetPasswordEmail, 
-    sendInvitationEmail 
+module.exports = {
+    sendEmail,
+    sendVerificationEmail,
+    send2FACode,
+    sendResetPasswordEmail,
+    sendInvitationEmail
 };

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import authService from './authService';
+import { API_ENDPOINTS } from '../utils/apiConfig';
 
-// const API_URL = 'http://localhost:3001/api/assistant';
-const API_URL = 'http://192.168.1.117:3001/api/assistant';
+const API_URL = API_ENDPOINTS.assistant;
 
 // Configuration automatique du Header avec le Token
 const getAuthHeaders = () => {
@@ -10,7 +10,9 @@ const getAuthHeaders = () => {
     return {
         headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
         }
     };
 };
@@ -29,13 +31,15 @@ const sendMessage = async (query, sessionId = null) => {
 
 // 2. Récupérer la liste des conversations (Historique)
 const getSessions = async () => {
-    const response = await axios.get(`${API_URL}/sessions`, getAuthHeaders());
+    const timestamp = new Date().getTime();
+    const response = await axios.get(`${API_URL}/sessions?_t=${timestamp}`, getAuthHeaders());
     return response.data.data;
 };
 
 // 3. Récupérer les messages d'une conversation précise
 const getSessionMessages = async (sessionId) => {
-    const response = await axios.get(`${API_URL}/sessions/${sessionId}`, getAuthHeaders());
+    const timestamp = new Date().getTime();
+    const response = await axios.get(`${API_URL}/sessions/${sessionId}?_t=${timestamp}`, getAuthHeaders());
     return response.data.data;
 };
 

@@ -6,15 +6,16 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import authService from '../services/authService';
 import Footer from '../components/Footer';
+import { API_ENDPOINTS } from '../utils/apiConfig';
 
 const OrganizationPage = () => {
-    const { t, i18n } = useTranslation();
-    const { user } = useAuth();
+    const { t } = useTranslation();
+    const { user, updateUser } = useAuth();
 
     const [orgData, setOrgData] = useState({ name: '', taxId: '', address: '' });
 
     const [team, setTeam] = useState([]);
-    const [ownerId, setOwnerId] = useState(null); // NOUVEAU : ID du propriétaire
+    const [ownerId, setOwnerId] = useState(null);
 
     const [inviteEmail, setInviteEmail] = useState('');
     const [hasOrg, setHasOrg] = useState(!!user?.organization_id);
@@ -28,36 +29,32 @@ const OrganizationPage = () => {
 
     const loadTeam = async () => {
         try {
-            // Le service renvoie maintenant { ownerId, members }
             const data = await orgService.getTeam();
             setTeam(data.members || []);
-            setOwnerId(data.ownerId); // On stocke l'ID du chef
+            setOwnerId(data.ownerId);
         } catch (e) {
             console.error("Erreur chargement équipe", e);
         }
     };
 
-    // Est-ce que JE suis le propriétaire ?
-    const isCurrentUserOwner = user && ownerId && user.id === ownerId;
+    const isCurrentUserOwner = user && ownerId && String(user.id) === String(ownerId);
 
     const refreshUserProfile = async () => {
-        // ... (Code inchangé) ...
         try {
-            const API_URL = 'http://192.168.1.117:3001/api/auth';
+            const API_URL = API_ENDPOINTS.auth;
             const token = authService.getToken();
             const response = await axios.get(`${API_URL}/me`, { headers: { 'Authorization': `Bearer ${token}` } });
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-            window.location.reload();
+            updateUser(response.data.user);
+            // On ne redirige plus violemment, on laisse React mettre à jour l'UI
         } catch (e) { console.error(e); }
     };
 
     const handleCreateOrg = async (e) => {
-        // ... (Code inchangé) ...
         e.preventDefault();
         setLoading(true);
         try {
             await orgService.createOrganization(orgData);
-            alert(i18n.language === 'ar' ? "تم إنشاء المكتب بنجاح!" : "Cabinet créé avec succès !");
+            alert(t('org.success_create'));
             await refreshUserProfile();
         } catch (e) {
             alert("Erreur lors de la création.");
@@ -69,7 +66,7 @@ const OrganizationPage = () => {
         e.preventDefault();
         try {
             await orgService.inviteMember(inviteEmail);
-            alert(i18n.language === 'ar' ? `تم إرسال الدعوة إلى ${inviteEmail}` : `Invitation envoyée à ${inviteEmail}`);
+            alert(t('org.success_invite') + inviteEmail);
             setInviteEmail('');
         } catch (e) {
             alert("Erreur lors de l'invitation.");
@@ -77,7 +74,7 @@ const OrganizationPage = () => {
     };
 
     const handleRemoveMember = async (memberId) => {
-        if (!window.confirm("Êtes-vous sûr de vouloir retirer ce membre du cabinet ?")) return;
+        if (!window.confirm(t('org.confirm_remove'))) return;
         try {
             await orgService.removeMember(memberId);
             setTeam(team.filter(m => m.id !== memberId));
@@ -90,15 +87,19 @@ const OrganizationPage = () => {
         return (
             <div className="max-w-6xl mx-auto flex flex-col min-h-[calc(100vh-10rem)]">
                 <div className="flex-1 mt-10 max-w-2xl mx-auto w-full">
-                    {/* Formulaire Création (Inchangé) */}
                     <div className="bg-white dark:bg-dark-card p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800">
                         <div className="text-center mb-6">
                             <div className="mx-auto w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-4 text-primary-600"><Building2 size={32} /></div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{i18n.language === 'ar' ? 'إنشاء مكتبك (مؤسسة)' : 'Créer votre Cabinet'}</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('org.create_title')}</h2>
                         </div>
                         <form onSubmit={handleCreateOrg} className="space-y-4">
-                            <div><label className="block text-sm font-medium mb-1">Nom du Cabinet</label><input type="text" className="w-full p-2.5 rounded-lg border outline-none" value={orgData.name} onChange={e => setOrgData({ ...orgData, name: e.target.value })} required /></div>
-                            <button type="submit" disabled={loading} className="w-full bg-primary-600 text-white py-2.5 rounded-lg">{loading ? <Loader2 className="animate-spin mx-auto" /> : 'Créer'}</button>
+                            <div>
+                                <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">{t('org.name_label')}</label>
+                                <input type="text" className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500" value={orgData.name} onChange={e => setOrgData({ ...orgData, name: e.target.value })} required />
+                            </div>
+                            <button type="submit" disabled={loading} className="w-full bg-primary-600 text-white py-2.5 rounded-lg">
+                                {loading ? <Loader2 className="animate-spin mx-auto" /> : t('org.create_btn')}
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -115,21 +116,19 @@ const OrganizationPage = () => {
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                         <Building2 className="text-primary-600" />
-                        {i18n.language === 'ar' ? 'مكتبي (مؤسسة)' : 'Mon Cabinet (Organisation)'}
+                        {t('nav.my_group')}
                     </h1>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* LISTE DES MEMBRES */}
                     <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                         <h3 className="text-lg font-bold mb-6 flex items-center gap-2 text-gray-900 dark:text-white border-b pb-4">
                             <Users size={20} className="text-primary-500" />
-                            {i18n.language === 'ar' ? 'فريق العمل' : 'Membres de l\'équipe'}
+                            {t('org.team_title')}
                         </h3>
 
                         <ul className="space-y-3">
                             {team.length === 0 && <p className="text-gray-500 text-sm">Aucun membre.</p>}
-
                             {team.map(member => {
                                 const isMemberOwner = member.id === ownerId;
                                 const isMe = user && user.id === member.id;
@@ -150,7 +149,7 @@ const OrganizationPage = () => {
                                         <div className="flex items-center gap-2">
                                             <span className="text-[10px] uppercase font-bold px-2 py-1 rounded-md border bg-primary-50 text-primary-700 border-primary-100">{member.role}</span>
                                             {isCurrentUserOwner && !isMe && (
-                                                <button onClick={() => handleRemoveMember(member.id)} className="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors" title="Retirer du cabinet"><Trash2 size={16} /></button>
+                                                <button onClick={() => handleRemoveMember(member.id)} className="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors" title="Retirer du groupe"><Trash2 size={16} /></button>
                                             )}
                                         </div>
                                     </li>
@@ -159,22 +158,23 @@ const OrganizationPage = () => {
                         </ul>
                     </div>
 
-                    {/* FORMULAIRE INVITATION */}
                     {isCurrentUserOwner && (
                         <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 h-fit">
                             <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
                                 <Plus size={20} className="text-green-500" />
-                                {i18n.language === 'ar' ? 'دعوة زميل' : 'Inviter un collaborateur'}
+                                {t('org.invite_title')}
                             </h3>
                             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-6">
-                                <p className="text-sm text-blue-800 dark:text-blue-300 leading-relaxed">Le collaborateur invité aura accès à tous les documents.</p>
+                                <p className="text-sm text-blue-800 dark:text-blue-300 leading-relaxed">{t('org.invite_desc')}</p>
                             </div>
                             <form onSubmit={handleInvite} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-500 mb-1">{i18n.language === 'ar' ? 'البريد الإلكتروني' : 'Email du collaborateur'}</label>
+                                    <label className="block text-sm font-medium text-gray-500 mb-1">{t('auth.email')}</label>
                                     <div className="flex gap-2">
-                                        <input type="email" className="flex-1 p-2.5 rounded-lg border outline-none dark:bg-gray-800 dark:text-white" placeholder="collegue@cabinet.com" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} required />
-                                        <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-4 rounded-lg flex items-center gap-2 font-medium"><Mail size={18} /> Inviter</button>
+                                        <input type="email" className="flex-1 p-2.5 rounded-lg border outline-none dark:bg-gray-800 dark:text-white bg-white" placeholder="collegue@dz-legal.com" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} required />
+                                        <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-4 rounded-lg flex items-center gap-2 font-medium">
+                                            <Mail size={18} /> {t('org.invite_btn')}
+                                        </button>
                                     </div>
                                 </div>
                             </form>

@@ -13,9 +13,38 @@ const { protect } = require('../../middlewares/authMiddleware');
 const { checkQuota } = require('../../middlewares/quotaMiddleware'); // <-- IMPORT AJOUTÉ
 
 // Configuration Multer
-const upload = multer({ 
-    dest: 'uploads/', 
-    limits: { fileSize: 10 * 1024 * 1024 }, 
+const path = require('path');
+const fs = require('fs');
+
+// Configuration Multer Robuste pour cPanel
+// On définit un dossier absolu à la racine du projet backend
+const uploadDir = path.resolve(__dirname, '../../../uploads');
+
+// Créer le dossier s'il n'existe pas (Sécurité)
+if (!fs.existsSync(uploadDir)) {
+    try {
+        fs.mkdirSync(uploadDir, { recursive: true });
+        console.log(`[Multer] Dossier uploads créé : ${uploadDir}`);
+    } catch (err) {
+        console.error(`[Multer] Erreur création dossier : ${err.message}`);
+    }
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        // Nom de fichier sécurisé
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const safeName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+        cb(null, uniqueSuffix + '-' + safeName);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB
 });
 
 // ============================================================

@@ -32,9 +32,10 @@ const Header = () => {
       {/* On masque le logo ici car il est déjà dans la Sidebar sur Desktop, mais utile sur mobile */}
       <div className="flex items-center gap-2 cursor-pointer flex-shrink-0 md:hidden" onClick={() => navigate('/')}>
         <img
-          src={theme === 'dark' ? "/logo_d.png" : "/logo_w.png"}
+          src="/logo_w.png"
           alt="Logo"
           className="w-8 h-8 object-contain"
+          onError={(e) => { e.target.src = "/logo_d.png" }}
         />
         <span className="font-bold text-lg">Dz Legal AI</span>
       </div>

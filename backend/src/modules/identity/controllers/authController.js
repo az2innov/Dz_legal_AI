@@ -2,10 +2,16 @@ const authService = require('../services/authService');
 
 const register = async (req, res) => {
     try {
+        console.log('--- Nouvelle tentative d\'inscription ---');
+        console.log('Body:', req.body);
         const user = await authService.register(req.body);
         res.status(201).json({ status: 'success', message: 'Compte créé. Vérifiez vos emails.', data: user });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error("🔥 Erreur Inscription détaillée:", error);
+        res.status(400).json({
+            error: error.message || "Erreur inconnue lors de l'inscription.",
+            details: error.stack
+        });
     }
 };
 

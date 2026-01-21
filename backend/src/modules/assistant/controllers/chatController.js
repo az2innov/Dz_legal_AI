@@ -6,7 +6,7 @@ const ask = async (req, res) => {
     try {
         const { query, history } = req.body;
         // On récupère sessionId s'il existe, sinon on en créera un
-        let { sessionId } = req.body; 
+        let { sessionId } = req.body;
         const userId = req.user.id; // Vient du middleware auth
 
         if (!query) return res.status(400).json({ error: "Question requise." });
@@ -50,6 +50,13 @@ const ask = async (req, res) => {
 // --- 2. Récupérer l'historique (Liste des sessions) ---
 const getHistory = async (req, res) => {
     try {
+        // ✅ Headers anti-cache pour éviter les sessions fantômes
+        res.set({
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        });
+
         const sessions = await chatService.getUserSessions(req.user.id);
         res.json({ status: 'success', data: sessions });
     } catch (error) {
@@ -61,6 +68,13 @@ const getHistory = async (req, res) => {
 // --- 3. Récupérer les messages d'une session précise ---
 const getSession = async (req, res) => {
     try {
+        // ✅ Headers anti-cache pour éviter les messages obsolètes
+        res.set({
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        });
+
         const { id } = req.params;
         const messages = await chatService.getSessionMessages(id, req.user.id);
         res.json({ status: 'success', data: messages });
@@ -74,10 +88,19 @@ const getSession = async (req, res) => {
 const deleteSession = async (req, res) => {
     try {
         const { id } = req.params;
+        console.log(`[CONTROLLER] 🗑️ DELETE session ${id} demandée par user ${req.user.id}`);
+
         await chatService.deleteSession(id, req.user.id);
+
+        console.log(`[CONTROLLER] ✅ DELETE session ${id} réussie`);
         res.json({ status: 'success', message: "Conversation supprimée." });
     } catch (error) {
-        res.status(500).json({ error: "Erreur suppression." });
+        console.error(`[CONTROLLER] ❌ Erreur deleteSession pour session ${req.params.id}:`, error.message);
+        console.error(`[CONTROLLER] ❌ Stack:`, error.stack);
+        res.status(500).json({
+            error: "Erreur suppression.",
+            details: error.message  // Retourner le message d'erreur pour debug
+        });
     }
 };
 

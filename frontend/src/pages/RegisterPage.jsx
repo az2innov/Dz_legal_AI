@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Lock, Mail, User, Briefcase, Loader2, Languages, Building2, MapPin, FileText, MessageCircle } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
+import PhoneInput from '../components/PhoneInput';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +28,8 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get('invite');
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'fr' ? 'ar' : 'fr';
@@ -63,7 +66,7 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      await register(formData);
+      await register({ ...formData, inviteToken });
       setSuccess(t('auth.success_register'));
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
@@ -106,6 +109,8 @@ const RegisterPage = () => {
             <div className="relative">
               <Briefcase className="absolute left-3 top-3 h-5 w-5 text-gray-400 rtl:right-3 rtl:left-auto" />
               <select
+                name="role"
+                value={formData.isOrg ? 'organization_account' : formData.role}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 rtl:pr-10 rtl:pl-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 outline-none transition-all text-gray-900 dark:text-white appearance-none"
               >
@@ -117,7 +122,7 @@ const RegisterPage = () => {
                   <option value="student" className={optionClass}>{t('auth.role_student')}</option>
                 </optgroup>
                 <optgroup label={i18n.language === 'ar' ? "مؤسسات" : "Professionnels (Multi-utilisateurs)"} className={optionClass}>
-                  <option value="organization_account" className={optionClass}>{i18n.language === 'ar' ? "مكتب محاماة / شركة (إنشاء منظمة)" : "Cabinet d'Avocats / Entreprise (Créer Organisation)"}</option>
+                  <option value="organization_account" className={optionClass}>{i18n.language === 'ar' ? "مكتب محاماة / شركة (إنشاء مجموعة)" : "Cabinet d'Avocats / Entreprise (Créer mon Groupe)"}</option>
                 </optgroup>
               </select>
             </div>
@@ -128,12 +133,12 @@ const RegisterPage = () => {
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800 space-y-4 animate-in fade-in slide-in-from-top-2">
               <h3 className="text-sm font-bold text-blue-800 dark:text-blue-300 flex items-center gap-2">
                 <Building2 size={16} />
-                {i18n.language === 'ar' ? 'معلومات المكتب / الشركة' : 'Informations du Cabinet / Société'}
+                {i18n.language === 'ar' ? 'معلومات المجموعة' : 'Informations du Groupe'}
               </h3>
 
               <div>
                 <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                  {i18n.language === 'ar' ? 'اسم المكتب' : 'Nom de la structure'}
+                  {i18n.language === 'ar' ? 'اسم المجموعة' : 'Nom du Groupe'}
                 </label>
                 <input name="orgName" type="text" value={formData.orgName} onChange={handleChange} required={formData.isOrg}
                   className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white text-gray-900 text-sm" />
@@ -187,10 +192,16 @@ const RegisterPage = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('auth.whatsapp')}</label>
-            <div className="relative">
-              <MessageCircle className="absolute left-3 top-3 h-5 w-5 text-gray-400 rtl:right-3 rtl:left-auto" />
-              <input name="whatsappNumber" type="text" value={formData.whatsappNumber} onChange={handleChange} placeholder="ex: 0550123456" className="w-full pl-10 pr-4 rtl:pr-10 rtl:pl-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 outline-none transition-all text-gray-900 dark:text-white" required />
-            </div>
+            <PhoneInput
+              value={formData.whatsappNumber}
+              onChange={handleChange}
+              placeholder="555 12 34 56"
+              required={true}
+            />
+            <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+              <MessageCircle size={12} />
+              {i18n.language === 'ar' ? 'يجب أن يكون الرقم مرتبطًا بـ WhatsApp لاستلام رمز التحقق.' : 'Le numéro doit être lié à WhatsApp pour recevoir le code.'}
+            </p>
           </div>
 
           <div>
@@ -202,7 +213,7 @@ const RegisterPage = () => {
           </div>
 
           <button type="submit" disabled={isLoading} className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 rounded-lg transition-all flex justify-center items-center gap-2 mt-2">
-            {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : (formData.isOrg ? (i18n.language === 'ar' ? "إنشاء المكتب والحساب" : "Créer le Cabinet & le Compte") : t('auth.register_btn'))}
+            {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : (formData.isOrg ? (i18n.language === 'ar' ? "إنشاء المجموعة والحساب" : "Créer le Groupe & le Compte") : t('auth.register_btn'))}
           </button>
         </form>
 

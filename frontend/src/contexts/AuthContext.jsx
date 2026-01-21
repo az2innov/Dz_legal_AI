@@ -31,8 +31,13 @@ export const AuthProvider = ({ children }) => {
     return await authService.register(userData);
   };
 
+  const updateUser = (newUser) => {
+    setUser(newUser);
+    localStorage.setItem('user', JSON.stringify(newUser));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

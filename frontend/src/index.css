@@ -21,7 +21,7 @@ body {
      - transition-colors : Animation fluide lors du changement de thème
   */
   @apply bg-gray-50 text-gray-900 dark:bg-dark-bg dark:text-dark-text transition-colors duration-200;
-  
+
   /* Police par défaut (Français/Latin) */
   font-family: var(--font-fr);
   margin: 0;
@@ -51,4 +51,56 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* --- Classe utilitaire pour scrollbar personnalisée --- */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  transition: background-color 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* --- Styles pour les Modals --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+/* Dark mode pour les modals */
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background: #1F2937;
+    color: white;
+  }
 }

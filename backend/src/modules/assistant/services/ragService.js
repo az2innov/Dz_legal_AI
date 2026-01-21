@@ -4,6 +4,8 @@ const axios = require('axios');
 const { GoogleAuth } = require('google-auth-library');
 const { Storage } = require('@google-cloud/storage');
 const path = require('path');
+const fs = require('fs');
+const debugFile = path.resolve(__dirname, '../../../../debug_rag.txt');
 
 // Chargement du .env depuis la racine
 require('dotenv').config({ path: path.resolve(__dirname, '../../../../.env') });
@@ -11,7 +13,10 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../../../.env') });
 const PROJECT_ID = process.env.GOOGLE_PROJECT_ID;
 const LOCATION = process.env.GOOGLE_LOCATION || 'global';
 const DATA_STORE_ID = process.env.GOOGLE_DATA_STORE_ID;
-const KEY_PATH = path.join(process.cwd(), 'google-auth.json');
+
+// Chemin absolu robuste vers google-auth.json (backend/google-auth.json)
+const KEY_PATH = path.resolve(__dirname, '../../../../google-auth.json');
+console.log(`[Google Auth] Key Path: ${KEY_PATH}`);
 
 const storage = new Storage({ keyFilename: KEY_PATH });
 
@@ -179,8 +184,23 @@ async function askAssistant(query, historyInput = "") {
         return { answer, sources };
 
     } catch (error) {
-        console.error("🚨 ERREUR RAG SERVICE:", error.response ? error.response.data : error.message);
-        throw new Error("Erreur service IA");
+        // LOG DÉTAILLÉ DE L'ERREUR DANS UN FICHIER
+        const timestamp = new Date().toISOString();
+        let errorLog = `\n[${timestamp}] 🚨 ERREUR RAG:\n`;
+
+        if (error.response) {
+            errorLog += `Status: ${error.response.status}\n`;
+            errorLog += `Data: ${JSON.stringify(error.response.data, null, 2)}\n`;
+        } else {
+            errorLog += `Message: ${error.message}\n`;
+            errorLog += `Stack: ${error.stack}\n`;
+        }
+        errorLog += `Config: Project=${PROJECT_ID}, Location=${LOCATION}, DataStore=${DATA_STORE_ID}\n`;
+
+        console.error(errorLog);
+        try { fs.appendFileSync(debugFile, errorLog); } catch (e) { /* ignore */ }
+
+        throw new Error(`Erreur Google AI: ${error.message}`);
     }
 }
 

@@ -139,7 +139,7 @@ const LoginPage = () => {
               <p>
                 {whatsappUsed
                   ? (i18n.language === 'ar'
-                    ? `تم إرسال رمز التحقق إلى واتساب الخاص بك (${whatsappUsed}).`
+                    ? <>تم إرسال رمز التحقق إلى واتساب الخاص بك (<span dir="ltr">{whatsappUsed}</span>).</>
                     : `Un code de vérification a été envoyé sur votre WhatsApp (${whatsappUsed}).`)
                   : (i18n.language === 'ar'
                     ? `تم إرسال رمز التحقق إلى ${email}.`

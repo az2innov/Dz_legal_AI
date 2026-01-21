@@ -1,8 +1,7 @@
 import axios from 'axios';
+import { API_ENDPOINTS } from '../utils/apiConfig';
 
-// URL de l'API Backend (Assurez-vous que le port correspond à votre backend)
-//const API_URL = 'http://localhost:3001/api/auth';
-const API_URL = 'http://192.168.1.117:3001/api/auth';
+const API_URL = API_ENDPOINTS.auth;
 /**
  * Inscription d'un nouvel utilisateur
  */
@@ -16,13 +15,13 @@ const register = async (userData) => {
  */
 const login = async (email, password) => {
   const response = await axios.post(`${API_URL}/login`, { email, password });
-  
+
   // Cas rare : Si le login réussit DIRECTEMENT (sans 2FA)
   if (response.data.status === 'success' && response.data.data && response.data.data.token) {
     localStorage.setItem('user', JSON.stringify(response.data.data.user));
     localStorage.setItem('token', response.data.data.token);
   }
-  
+
   return response.data;
 };
 
@@ -31,7 +30,7 @@ const login = async (email, password) => {
  */
 const verify2FA = async (userId, code) => {
   const response = await axios.post(`${API_URL}/verify-2fa`, { userId, code });
-  
+
   // Si le code est bon, le serveur renvoie le token
   if (response.data.status === 'success' && response.data.data && response.data.data.token) {
     localStorage.setItem('user', JSON.stringify(response.data.data.user));

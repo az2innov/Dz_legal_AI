@@ -1,33 +1,69 @@
-// src/config/db.js
-const { Pool } = require('pg');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// Vérification que le nom de la DB n'a pas d'espaces (erreur fréquente)
-const dbName = process.env.DB_NAME ? process.env.DB_NAME.trim() : 'legal_dz';
-
-const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: dbName,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-  // Optimisation : nombre max de clients dans le pool
-  max: 20, 
-  idleTimeoutMillis: 30000,
+const pool = mysql.createPool({
+  host: process.env.MYSQL_HOST || 'localhost',
+  user: process.env.MYSQL_USER || 'root',
+  password: process.env.MYSQL_PASSWORD || '',
+  database: process.env.MYSQL_DATABASE || 'dz_legal_ai',
+  port: process.env.MYSQL_PORT || 3306,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  charset: 'utf8mb4',
+  timezone: 'Z', // Force UTC pour éviter les décalages de dates
+  flags: '-FOUND_ROWS', // Désactive certains caches MySQL
+  supportBigNumbers: true,
+  bigNumberStrings: false
 });
 
-// Écouteur d'événements pour le debug
-pool.on('connect', () => {
-  // Optionnel : décommentez pour voir chaque connexion
-  // console.log('Base de données connectée avec succès');
-});
+console.log('--- 🐬 Mode MySQL Activé ---');
 
-pool.on('error', (err) => {
-  console.error('Erreur inattendue sur le client PostgreSQL', err);
-  process.exit(-1);
-});
+/**
+ * Nettoie les paramètres pour MySQL : transforme undefined en null
+ */
+const sanitizeParams = (params) => {
+  if (!params) return [];
+  return params.map(p => p === undefined ? null : p);
+};
 
 module.exports = {
-  query: (text, params) => pool.query(text, params),
-  pool, // <--- Assurez-vous que ceci est bien exporté
+  /**
+   * Wrapper pour garder la compatibilité avec pg (result.rows)
+   * Utilise query au lieu de execute pour éviter le cache des prepared statements
+   */
+  query: async (sql, params) => {
+    const [rows] = await pool.query(sql, sanitizeParams(params));
+    // Pour MySQL, rows est soit un tableau (SELECT) soit un ResultSetHeader (INSERT/UPDATE/DELETE)
+    // On simule rowCount pour la compatibilité avec pg
+    return {
+      rows: rows,
+      rowCount: rows.affectedRows || rows.length || 0
+    };
+  },
+
+  /**
+   * Pour les transactions
+   */
+  pool: {
+    connect: async () => {
+      const connection = await pool.getConnection();
+      return {
+        query: async (sql, params) => {
+          const [rows] = await connection.query(sql, sanitizeParams(params));
+          return {
+            rows: rows,
+            rowCount: rows.affectedRows || rows.length || 0
+          };
+        },
+        release: () => connection.release(),
+        beginTransaction: () => connection.beginTransaction(),
+        commit: () => connection.commit(),
+        rollback: () => connection.rollback(),
+      };
+    }
+  }
 };
+
+
+

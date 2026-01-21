@@ -1,0 +1,16 @@
+/* Styles forcés pour la page Pricing en mode jour */
+.pricing-card-title {
+    color: #111827 !important;
+}
+
+.pricing-card-price {
+    color: #000000 !important;
+}
+
+.pricing-card-description {
+    color: #374151 !important;
+}
+
+.pricing-card-feature {
+    color: #1F2937 !important;
+}

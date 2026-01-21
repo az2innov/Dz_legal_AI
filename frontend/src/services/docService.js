@@ -1,9 +1,8 @@
 import axios from 'axios';
 import authService from './authService';
+import { API_ENDPOINTS } from '../utils/apiConfig';
 
-// L'URL de base pour le module assistant
-// const API_URL = 'http://localhost:3001/api/assistant';
-const API_URL = 'http://192.168.1.117:3001/api/assistant';
+const API_URL = API_ENDPOINTS.assistant;
 
 // Helper pour récupérer les headers avec le token JWT à jour
 const getHeaders = () => ({

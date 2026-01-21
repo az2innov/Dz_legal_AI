@@ -12,6 +12,8 @@ const identityRoutes = require('./modules/identity/routes');
 const billingRoutes = require('./modules/billing/routes');
 const organizationRoutes = require('./modules/organization/routes');
 const adminRoutes = require('./modules/admin/routes');
+const libraryRoutes = require('./modules/library/routes');
+const contactRoutes = require('./modules/contact/routes');
 
 // Initialisation
 const app = express();
@@ -19,7 +21,7 @@ const app = express();
 // --- Middlewares Globaux ---
 
 app.use(helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" } 
+    crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(morgan('dev'));
 
@@ -27,19 +29,25 @@ app.use(morgan('dev'));
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://192.168.1.117:5173',
     process.env.FRONTEND_URL
-];
+].filter(Boolean);
 
 
 app.use(cors({
-    origin: [
-        'http://localhost:5173',      // Pour votre PC (localhost)
-        'http://127.0.0.1:5173',      // Autre forme de localhost
-        'http://192.168.1.117:5173'   // <--- VOTRE IP LOCALE (Celle du téléphone)
-    ],
-    credentials: true, // Important pour les cookies/sessions si vous en utilisez
+    origin: (origin, callback) => {
+        // Autoriser les requêtes sans origine (comme les outils de test ou requêtes serveur à serveur)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma']
 }));
 
 // Parsing
@@ -64,6 +72,8 @@ app.use('/api/auth', identityRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/organization', organizationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/library', libraryRoutes);
+app.use('/api/contact', contactRoutes);
 
 // --- Gestion des Erreurs ---
 
@@ -73,8 +83,8 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
     console.error('🔥 Erreur Serveur :', err.stack);
-    const message = process.env.NODE_ENV === 'production' 
-        ? 'Une erreur interne est survenue.' 
+    const message = process.env.NODE_ENV === 'production'
+        ? 'Une erreur interne est survenue.'
         : err.message;
 
     res.status(500).json({ error: 'Internal Server Error', message: message });

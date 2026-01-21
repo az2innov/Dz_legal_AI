@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { UploadCloud, FileText, Trash2, ArrowLeft, Loader2, Copy, Send, Bot, User, MessageSquare, ExternalLink, Calendar } from 'lucide-react';
 import docService from '../services/docService';
 import Footer from '../components/Footer';
+import { API_ENDPOINTS } from '../utils/apiConfig';
 
 // Fonction utilitaire pour détecter l'Arabe
 const isTextArabic = (text) => /[\u0600-\u06FF]/.test(text);
@@ -45,14 +46,27 @@ const DocsPage = () => {
         }
     };
 
+
     const handleSelectDoc = async (docSummary) => {
         // Affichage immédiat avec loader implicite si ai_summary est vide
         setSelectedDoc({ ...docSummary });
-        setChatMessages([]);
+        setChatMessages([]); // Reset temporaire
         setChatInput('');
 
         try {
             const fullDoc = await docService.getDocumentById(docSummary.id);
+
+            // ===== NOUVEAU : Charger l'historique de conversation sauvegardé =====
+            if (fullDoc.conversation_history && fullDoc.conversation_history.length > 0) {
+                const formattedHistory = fullDoc.conversation_history.map(msg => ({
+                    role: msg.role,
+                    content: msg.content
+                }));
+                setChatMessages(formattedHistory);
+                console.log(`📜 Historique chargé: ${formattedHistory.length} messages`);
+            }
+            // ====================================================================
+
             setSelectedDoc(fullDoc);
         } catch (error) {
             console.error("Erreur chargement détails:", error);
@@ -117,7 +131,7 @@ const DocsPage = () => {
     // --- VUE DÉTAIL (Analyse + Chat) ---
     if (selectedDoc) {
         const filename = selectedDoc.gcs_path ? selectedDoc.gcs_path.split(/[\\/]/).pop() : null;
-        const fileUrl = filename ? `http://192.168.1.117:3001/files/${filename}` : null;
+        const fileUrl = filename ? `${API_ENDPOINTS.files}/${filename}` : null;
 
         return (
             <div className="max-w-6xl mx-auto flex flex-col min-h-[calc(100vh-10rem)] animate-in fade-in slide-in-from-bottom-4">

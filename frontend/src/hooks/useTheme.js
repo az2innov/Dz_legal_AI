@@ -6,9 +6,12 @@ export function useTheme() {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    // On enlève l'ancienne classe et on met la nouvelle
-    root.classList.remove('light', 'dark');
-    root.classList.add(theme);
+    // On retire la classe dark si le thème est light
+    root.classList.remove('dark');
+    // On ajoute la classe dark seulement si le thème est dark
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    }
     // On sauvegarde
     localStorage.setItem('theme', theme);
   }, [theme]);

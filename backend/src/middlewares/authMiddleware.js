@@ -13,7 +13,7 @@ const protect = async (req, res, next) => {
             // --- CORRECTION 2 : Vérification temps réel en BDD ---
             // On récupère l'état actuel de l'utilisateur
             const userRes = await db.query(
-                "SELECT id, role, email, is_active, organization_id FROM users WHERE id = $1", 
+                "SELECT id, role, email, is_active, organization_id FROM users WHERE id = ?",
                 [decoded.id]
             );
 

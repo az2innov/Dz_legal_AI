@@ -82,7 +82,36 @@ const HomeRoute = () => {
     );
 };
 
-// --- 3. CONTENU DU TABLEAU DE BORD (UTILISATEUR STANDARD) ---
+// --- 3. ROUTE INTELLIGENTE POUR PRICING ---
+const PricingRoute = () => {
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg">
+                <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+            </div>
+        );
+    }
+
+    // Si connecté, afficher avec le menu latéral (MainLayout)
+    if (user) {
+        return (
+            <MainLayout>
+                <PricingPage />
+            </MainLayout>
+        );
+    }
+
+    // Si pas connecté, afficher sans menu (PublicLayout)
+    return (
+        <PublicLayout>
+            <PricingPage />
+        </PublicLayout>
+    );
+};
+
+// --- 4. CONTENU DU TABLEAU DE BORD (UTILISATEUR STANDARD) ---
 const DashboardContent = () => {
     const { t, i18n } = useTranslation();
     const { user } = useAuth();
@@ -98,7 +127,15 @@ const DashboardContent = () => {
                 console.error("Erreur chargement stats:", error);
             }
         };
+
+        // Chargement initial
         fetchStats();
+
+        // Rafraîchissement automatique toutes les 10 secondes
+        const interval = setInterval(fetchStats, 10000);
+
+        // Nettoyage à la destruction du composant
+        return () => clearInterval(interval);
     }, []);
 
     const getPlanLabel = (planCode) => {
@@ -189,13 +226,13 @@ const DashboardContent = () => {
                             </div>
                         </div>
 
-                        {/* On cache le bouton upgrade si c'est déjà Pro/Premium */}
-                        {!isPremiumOrPro && (
+                        {/* Bouton gérer abonnement (sauf pour les membres de groupe) */}
+                        {!user?.organization_id && (
                             <button
                                 onClick={() => navigate('/pricing')}
                                 className="mt-2 text-xs flex items-center gap-1 text-primary-600 hover:text-primary-700 font-medium hover:underline"
                             >
-                                {i18n.language === 'ar' ? 'ترقية الخطة' : 'Mettre à niveau'}
+                                {i18n.language === 'ar' ? 'إدارة الاشتراك' : 'Gérer mon abonnement'}
                                 <ArrowRight size={12} className={i18n.language === 'ar' ? 'rotate-180' : ''} />
                             </button>
                         )}
@@ -229,7 +266,7 @@ function App() {
                 <Routes>
                     {/* --- ROUTES PUBLIQUES --- */}
                     <Route path="/faq" element={<PublicLayout><FAQPage /></PublicLayout>} />
-                    <Route path="/pricing" element={<PublicLayout><PricingPage /></PublicLayout>} />
+                    <Route path="/pricing" element={<PricingRoute />} />
                     <Route path="/texts" element={<PublicLayout><LegalTextsPage /></PublicLayout>} />
                     <Route path="/login" element={<PublicLayout><LoginPage /></PublicLayout>} />
                     <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />
@@ -245,7 +282,6 @@ function App() {
                     <Route path="/documents" element={<ProtectedRoute><MainLayout><DocsPage /></MainLayout></ProtectedRoute>} />
                     <Route path="/organization" element={<ProtectedRoute><MainLayout><OrganizationPage /></MainLayout></ProtectedRoute>} />
                     <Route path="/admin" element={<ProtectedRoute><MainLayout><AdminPage /></MainLayout></ProtectedRoute>} />
-
 
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
