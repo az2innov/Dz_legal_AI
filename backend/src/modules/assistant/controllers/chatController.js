@@ -25,8 +25,9 @@ const ask = async (req, res) => {
         await chatService.saveMessage(sessionId, 'user', query);
 
         // C. Appel à l'IA (Google)
-        // On passe 'history' si besoin pour le contexte immédiat
-        const result = await ragService.askAssistant(query, history);
+        // On passe 'history', 'query' et le 'mode' sélectionné
+        const mode = req.body.mode || 'expert';
+        const result = await ragService.askAssistant(query, history, mode);
 
         // D. Sauvegarde de la réponse IA
         await chatService.saveMessage(sessionId, 'assistant', result.answer, result.sources);

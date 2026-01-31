@@ -76,6 +76,15 @@ const resources = {
         "docs": { "title": "Mes Documents", "desc": "Analysez vos documents juridiques ici." }
       },
 
+      // --- AGENTS ---
+      "assistant": {
+        "agents": {
+          "chat": { "title": "Assistant Rapide", "desc": "Réponses instantanées pour vos questions juridiques simples." },
+          "expert": { "title": "Conseiller Juridique", "desc": "Analyse approfondie et structurée (SGG 2024). Idéal pour les cas complexes." },
+          "analyzer": { "title": "Analyseur de Documents", "desc": "Audit de vos fichiers PDF pour détecter les risques et synthétiser les clauses." }
+        }
+      },
+
       // --- LANDING PAGE ---
       "landing": {
         "hero_title": "L'Intelligence Artificielle au service du Droit Algérien",
@@ -428,6 +437,15 @@ const resources = {
           "welcome": "مرحبًا بك. أنا مساعدك القانوني الذكي. كيف يمكنني مساعدتك اليوم؟"
         },
         "docs": { "title": "وثائقي", "desc": "قم بتحليل مستنداتك القانونية هنا." }
+      },
+
+      // --- AGENTS (AR) ---
+      "assistant": {
+        "agents": {
+          "chat": { "title": "مساعد سريع", "desc": "إجابات فورية لأسئلتك القانونية البسيطة." },
+          "expert": { "title": "مستشار قانوني", "desc": "تحليل عميق ومعمق (SGG 2024). مثالي للحالات المعقدة." },
+          "analyzer": { "title": "محلل الوثائق", "desc": "تدقيق في ملفات PDF الخاصة بك للكشف عن المخاطر وتلخيص البنود." }
+        }
       },
 
       // --- LANDING PAGE (AR) ---

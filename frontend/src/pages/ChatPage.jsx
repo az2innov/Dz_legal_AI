@@ -1,12 +1,28 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send, Bot, User, FileText, Loader2, PlusCircle, MessageSquare, Trash2, Menu, Target, Copy, Check } from 'lucide-react';
+import { Send, Bot, User, FileText, Loader2, PlusCircle, MessageSquare, Trash2, Menu, Target, Copy, Check, UploadCloud } from 'lucide-react';
 import chatService from '../services/chatService';
+import docService from '../services/docService';
 import Footer from '../components/Footer';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import AgentSelector from '../components/assistant/AgentSelector';
 
-const isTextArabic = (text) => /[\u0600-\u06FF]/.test(text);
+const isTextArabic = (text) => {
+  if (!text) return false;
+  // Détection "intelligente" : Ne déclenche le RTL que si le texte commence par de l'Arabe 
+  // ou contient une forte proportion de caractères arabes (évite les faux-positifs sur les citations FR)
+  const arabicRegex = /[\u0600-\u06FF]/g;
+  const matches = text.match(arabicRegex);
+  if (!matches) return false;
+
+  // Si le premier caractère significatif est arabe -> RTL
+  const firstChar = text.trim().charAt(0);
+  if (/[\u0600-\u06FF]/.test(firstChar)) return true;
+
+  // Sinon, seulement si plus de 30% du texte est arabe
+  return (matches.length / text.length) > 0.3;
+};
 
 const STARTER_QUESTIONS = {
   fr: [
@@ -30,6 +46,43 @@ const ChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshingLink, setIsRefreshingLink] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [agentMode, setAgentMode] = useState(null); // 'chat', 'expert', 'analyzer'
+
+  // --- Upload Analyzer State ---
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
+
+  const handleAnalyzerUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      alert(i18n.language === 'ar' ? 'يرجى تحميل ملف PDF فقط' : 'Veuillez sélectionner un fichier PDF uniquement.');
+      e.target.value = null;
+      return;
+    }
+
+    setIsUploadingFile(true);
+    try {
+      const prompt = i18n.language === 'ar' ? 'حلل هذه الوثيقة واستخرج البنود المهمة والمخاطر' : 'Analyse ce document, résume les points clés et identifie les risques.';
+      const newDoc = await docService.uploadDocument(file, prompt);
+
+      // On notifie l'utilisateur que c'est fait
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: i18n.language === 'ar'
+          ? `✅ **تم تحليل المستند بنجاح!** (${newDoc.file_name})\n\nلقد قمت بحفظه في "مستنداتي". يمكنك الآن طرح أسئلة حوله هنا.`
+          : `✅ **Document analysé avec succès !** (${newDoc.file_name})\n\nJe l'ai sauvegardé dans "Mes Documents". Vous pouvez maintenant me poser des questions à son sujet.`
+      }]);
+
+      // Optionnel : On pourrait switcher contextuellement, mais pour l'instant on reste dans le chat explicite.
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert(i18n.language === 'ar' ? "فشل التحليل" : "Échec de l'analyse");
+    } finally {
+      setIsUploadingFile(false);
+      e.target.value = null; // Reset input
+    }
+  };
 
   // --- Gestion du Copier-Coller (Aide Navigation) ---
   const handleCopy = (text) => {
@@ -97,6 +150,7 @@ const ChatPage = () => {
 
   const handleNewChat = () => {
     setCurrentSessionId(null);
+    setAgentMode(null); // Reset agent mode for new chat
     setMessages([{
       role: 'assistant',
       content: t('pages.chat.welcome'),
@@ -120,7 +174,9 @@ const ChatPage = () => {
     setMessages(prev => [...prev, { role: 'user', content: userQuestion }]);
 
     try {
-      const response = await chatService.sendMessage(userQuestion, currentSessionId);
+      // On envoie le mode actuel (expert par défaut si non défini et qu'on est en train d'écrire)
+      const modeToSend = agentMode || 'expert';
+      const response = await chatService.sendMessage(userQuestion, currentSessionId, modeToSend);
       const data = response.data;
 
       if (data.isNewSession) {
@@ -297,20 +353,72 @@ const ChatPage = () => {
           <div className="flex-1 overflow-y-auto px-2 md:px-3 custom-scrollbar">
             <div className="max-w-4xl mx-auto py-6 space-y-4">
 
-              {/* SUGGESTIONS */}
-              {messages.length === 1 && !isLoading && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  {STARTER_QUESTIONS[i18n.language === 'ar' ? 'ar' : 'fr'].map((q, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setInput(q.query)}
-                      className="text-start p-4 bg-white dark:bg-[#111827] border border-gray-200 dark:border-white/5 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-lg group shadow-sm"
+              {/* SÉLECTEUR D'AGENT (Vision 2.0) */}
+              {messages.length === 1 && !agentMode && !currentSessionId && (
+                <AgentSelector onSelect={setAgentMode} selectedAgentId={agentMode} />
+              )}
+
+              {/* SUGGESTIONS ou UPLOAD (Selon le mode) */}
+              {messages.length === 1 && !isLoading && (agentMode || currentSessionId) && (
+                agentMode === 'analyzer' ? (
+                  /* --- MODE ANALYSEUR : ZONE D'UPLOAD --- */
+                  <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div
+                      onClick={() => document.getElementById('chat-file-upload').click()}
+                      className={`
+                        relative group flex flex-col items-center justify-center w-full h-48 
+                        border-2 border-dashed border-purple-300 dark:border-purple-800 
+                        rounded-3xl bg-purple-50/50 dark:bg-purple-900/10 
+                        hover:bg-purple-50 dark:hover:bg-purple-900/20 
+                        cursor-pointer transition-all duration-300
+                        ${isUploadingFile ? 'opacity-50 pointer-events-none' : ''}
+                      `}
                     >
-                      <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1 uppercase tracking-wider">{q.title}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white line-clamp-2">{q.query}</p>
-                    </button>
-                  ))}
-                </div>
+                      {isUploadingFile ? (
+                        <>
+                          <Loader2 className="w-10 h-10 text-purple-600 animate-spin mb-3" />
+                          <p className="text-sm font-bold text-purple-600 animate-pulse">
+                            {i18n.language === 'ar' ? 'جاري تحليل المستند...' : 'Analyse du document en cours...'}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="p-4 bg-white dark:bg-gray-800 rounded-full shadow-lg shadow-purple-200 dark:shadow-purple-900/20 mb-3 group-hover:scale-110 transition-transform">
+                            <UploadCloud className="w-8 h-8 text-purple-500" />
+                          </div>
+                          <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                            {i18n.language === 'ar' ? 'انقر لتحميل ملف PDF للتحليل' : 'Cliquez pour analyser un document PDF'}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {i18n.language === 'ar' ? 'يتم التدقيق في الوثيقة بحثاً عن المخاطر القانونية' : 'Détection automatique des risques et clauses'}
+                          </p>
+                        </>
+                      )}
+
+                      <input
+                        id="chat-file-upload"
+                        type="file"
+                        className="hidden"
+                        accept="application/pdf"
+                        onChange={handleAnalyzerUpload}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  /* --- MODE STANDARD/EXPERT : QUESTIONS --- */
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    {STARTER_QUESTIONS[i18n.language === 'ar' ? 'ar' : 'fr'].map((q, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setInput(q.query)}
+                        className="text-start p-4 bg-white dark:bg-[#111827] border border-gray-200 dark:border-white/5 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-lg group shadow-sm"
+                      >
+                        <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1 uppercase tracking-wider">{q.title}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white line-clamp-2">{q.query}</p>
+                      </button>
+                    ))}
+                  </div>
+                )
               )}
 
               {messages.map((msg, idx) => {

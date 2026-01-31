@@ -18,9 +18,9 @@ const getAuthHeaders = () => {
 };
 
 // 1. Envoyer un message (Nouvelle ou Ancienne session)
-const sendMessage = async (query, sessionId = null) => {
+const sendMessage = async (query, sessionId = null, mode = 'chat') => {
     // Si on a un sessionId, on l'ajoute au payload
-    const payload = { query };
+    const payload = { query, mode };
     if (sessionId) {
         payload.sessionId = sessionId;
     }

@@ -6,7 +6,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../../../.env') });
 const apiKey = process.env.GOOGLE_API_KEY;
 
 // On garde le modèle qui a fonctionné pour vous (2.0 Flash est très bon pour le multilingue)
-const modelName = 'gemini-2.0-flash'; 
+const modelName = 'gemini-2.0-flash';
 
 // Initialisation du client
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -21,7 +21,7 @@ function isArabic(text) {
  */
 async function analyzeDocument(filePath, mimeType, userPrompt) {
     console.log(`[Analyze] Fichier : ${path.basename(filePath)}`);
-    
+
     // Détection de la langue demandée via le prompt de l'utilisateur
     const targetLang = isArabic(userPrompt) ? "ARABE" : "FRANÇAIS";
     console.log(`[Analyze] Langue cible détectée : ${targetLang}`);
@@ -29,7 +29,7 @@ async function analyzeDocument(filePath, mimeType, userPrompt) {
     try {
         if (!apiKey) throw new Error("Clé API Google manquante.");
 
-        const model = genAI.getGenerativeModel({ 
+        const model = genAI.getGenerativeModel({
             model: modelName,
             generationConfig: { temperature: 0.1, maxOutputTokens: 8192 }
         });
@@ -44,15 +44,27 @@ Tâche : Analyse le document juridique ci-joint.
 
 Instruction de l'utilisateur : "${userPrompt}"
 
-RÈGLES IMPÉRATIVES DE LANGUE :
+RÈGLES IMPÉRATIVES DE LANGUE ET FORMAT :
 1. L'utilisateur veut une réponse en : ${targetLang}.
-2. Si le document est en Français mais que la langue demandée est ARABE : Tu DOIS TRADUIRE le résumé en ARABE.
-3. Ne réponds JAMAIS en français si la demande est en arabe.
+2. FORMATAGE MARKDOWN OBLIGATOIRE :
+   - Titres Sections : ### Titre
+   - Listes : - Item
+   - Important : **Gras**
+3. Si le document est en Français mais que la langue demandée est ARABE : Tu DOIS TRADUIRE le résumé en ARABE.
 
-Structure de la réponse :
-- Nature du document.
-- Points clés.
-- Décisions / Articles cités.
+Structure de la réponse attendue :
+### 📄 Nature du document
+[Type de document, dates, parties prenantes]
+
+### 🔑 Points Clés
+- [Point 1]
+- [Point 2]
+
+### ⚖️ Références Juridiques
+- [Articles cités...]
+
+### ⚠️ Analyse des Risques (Si applicable)
+- [Risque identifié...]
         `;
 
         const imageParts = [{
@@ -85,7 +97,7 @@ async function chatWithDocument(filePath, mimeType, question, history = []) {
         }
 
         const model = genAI.getGenerativeModel({ model: modelName });
-        
+
         const fileBuffer = fs.readFileSync(filePath);
         const fileBase64 = fileBuffer.toString('base64');
 
@@ -95,7 +107,7 @@ async function chatWithDocument(filePath, mimeType, question, history = []) {
         // Construction de l'historique
         let promptHistory = "";
         if (history && history.length > 0) {
-            promptHistory = "Historique de la conversation :\n" + history.map(msg => 
+            promptHistory = "Historique de la conversation :\n" + history.map(msg =>
                 `${msg.role === 'user' ? 'Utilisateur' : 'Assistant'} : ${msg.content}`
             ).join("\n") + "\n\n";
         }
@@ -112,9 +124,15 @@ Nouvelle Question : "${question}"
 
 RÈGLES ABSOLUES :
 1. Langue de réponse OBLIGATOIRE : ${targetLang}.
-2. Si le document est en Français et la question en Arabe -> TRADUIS ta réponse en Arabe.
-3. Ne commence pas par "Je suis désolé" ou des phrases génériques. Réponds directement à la question en utilisant le contenu du PDF.
-4. Si la réponse n'est pas dans le document, dis (dans la bonne langue) : "Cette information ne figure pas dans le document."
+2. FORMATAGE : Utilise le MARKDOWN pour structurer ta réponse.
+   - Utilise des **titres** (## ou ###) pour séparer les sections.
+   - Utilise des **listes à puces** (-) pour énumérer les points.
+   - Mets en **gras** les termes clés ou numéros d'articles.
+   - IMPORTANT : Pour les textes de loi, insère DEUX SAUTS DE LIGNE (\n\n) avant chaque nouvel Article (Art. X, Article 1...).
+   - Interdit de faire un bloc compact. Aère le texte au maximum.
+3. Si le document est en Français et la question en Arabe -> TRADUIS ta réponse en Arabe.
+4. Réponds directement à la question en utilisant le contenu du PDF.
+5. Si la réponse n'est pas dans le document, dis le clairement.
         `;
 
         const imageParts = [{

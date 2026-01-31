@@ -220,7 +220,15 @@ const DocsPage = () => {
                                                 className={`px-4 py-2.5 rounded-2xl text-sm max-w-[85%] ${isUser ? 'bg-primary-600 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-none'}`}
                                                 style={{ direction: isMsgAr ? 'rtl' : 'ltr', textAlign: isMsgAr ? 'right' : 'left' }}
                                             >
-                                                {msg.content}
+                                                {isUser ? (
+                                                    msg.content
+                                                ) : (
+                                                    <div className={`prose prose-sm max-w-none dark:prose-invert ${isMsgAr ? 'prose-rtl text-right' : 'text-left'}`}>
+                                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                            {msg.content}
+                                                        </ReactMarkdown>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     );
