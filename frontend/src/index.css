@@ -1,31 +1,27 @@
-/* Import des polices Google Fonts : Inter (Latin) et Cairo (Arabe) */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Définition des variables de polices et couleurs premium */
+:root {
+  --font-ar: 'Cairo', sans-serif;
+  --font-fr: 'Outfit', 'Inter', sans-serif;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --dark-bg: #0b1120;
+  --dark-card: #111827;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
 
-/* Directives Tailwind obligatoires */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Définition des variables de polices */
-:root {
-  --font-ar: 'Cairo', sans-serif;
-  --font-fr: 'Inter', sans-serif;
-}
-
 /* Style de base du corps de page */
 body {
-  /* 
-     - bg-gray-50 : Fond clair par défaut
-     - text-gray-900 : Texte sombre par défaut
-     - dark:bg-dark-bg : Fond sombre (défini dans tailwind.config.js) en mode nuit
-     - transition-colors : Animation fluide lors du changement de thème
-  */
-  @apply bg-gray-50 text-gray-900 dark:bg-dark-bg dark:text-dark-text transition-colors duration-200;
-
-  /* Police par défaut (Français/Latin) */
+  @apply bg-gray-50 text-gray-900 dark:bg-[#0a0a0b] dark:text-gray-100 transition-colors duration-300;
   font-family: var(--font-fr);
   margin: 0;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Règle Spéciale : Quand la page passe en Arabe (Direction Right-To-Left) */
@@ -34,11 +30,9 @@ body {
 }
 
 /* --- Esthétique de la barre de défilement (Scrollbar) --- */
-/* Pour donner un aspect "App Native" et non "Page Web" */
-
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -46,61 +40,36 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  @apply bg-gray-200 dark:bg-gray-800 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400 dark:bg-gray-500;
+  @apply bg-gray-300 dark:bg-gray-700;
 }
 
-/* --- Classe utilitaire pour scrollbar personnalisée --- */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* --- Boutons Premium --- */
+.btn-premium {
+  @apply px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 active:scale-95;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
+.btn-primary {
+  @apply btn-premium bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
-  transition: background-color 0.2s ease;
+.btn-secondary {
+  @apply btn-premium bg-white dark:bg-white/5 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400 dark:bg-gray-500;
+/* Glassmorphism */
+.glass-effect {
+  @apply bg-white/70 dark:bg-[#111827]/70 backdrop-blur-md border border-white/10 dark:border-white/5;
 }
 
-/* --- Styles pour les Modals --- */
+/* Modals Refined */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
+  @apply fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4;
 }
 
 .modal-content {
-  background: white;
-  border-radius: 12px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  position: relative;
-}
-
-/* Dark mode pour les modals */
-@media (prefers-color-scheme: dark) {
-  .modal-content {
-    background: #1F2937;
-    color: white;
-  }
+  @apply bg-white dark:bg-[#111827] rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-white/10 dark:border-white/5 relative;
 }

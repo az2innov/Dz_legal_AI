@@ -57,10 +57,12 @@ const verify2FA = async (req, res) => {
 
 const forgotPassword = async (req, res) => {
     try {
+        console.log(`[Auth] Forgot password request for: ${req.body.email}`);
         await authService.forgotPassword(req.body.email);
         res.json({ status: 'success', message: 'Si le compte existe, un email a été envoyé.' });
     } catch (error) {
-        res.status(500).json({ error: "Erreur serveur." });
+        console.error("🔥 Erreur forgotPassword détaillée:", error);
+        res.status(500).json({ error: "Erreur serveur.", details: error.message });
     }
 };
 

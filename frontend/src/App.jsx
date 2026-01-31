@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight, MessageSquare } from 'lucide-react';
 
 // Layout & Context
 import MainLayout from './layouts/MainLayout';
@@ -61,9 +61,15 @@ const HomeRoute = () => {
 
     if (user) {
         // --- LOGIQUE REDIRECTION ADMIN ---
-        // Si l'utilisateur est un admin, il ne doit pas voir le dashboard utilisateur classique
         if (user.role === 'admin') {
             return <Navigate to="/admin" replace />;
+        }
+
+        // --- LOGIQUE REDIRECTION PREMIER LOGIN ---
+        const lastVisited = localStorage.getItem(`last_visit_${user.id}`);
+        if (!lastVisited) {
+            localStorage.setItem(`last_visit_${user.id}`, new Date().toISOString());
+            return <Navigate to="/chat" replace />;
         }
 
         // Sinon, on affiche le tableau de bord utilisateur standard
@@ -240,14 +246,24 @@ const DashboardContent = () => {
                 </div>
 
                 {/* Zone d'action rapide */}
-                <div className="bg-white dark:bg-dark-card p-12 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 text-center min-h-[300px] flex flex-col items-center justify-center transition-colors">
-                    <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3">
+                <button
+                    onClick={() => navigate('/chat')}
+                    className="w-full bg-white dark:bg-dark-card p-12 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 text-center min-h-[300px] flex flex-col items-center justify-center transition-all group hover:border-primary-500 hover:shadow-xl hover:shadow-primary-600/5 cursor-pointer"
+                >
+                    <div className="p-4 rounded-full bg-primary-50 dark:bg-primary-900/20 text-primary-600 mb-6 group-hover:scale-110 transition-transform">
+                        <MessageSquare size={32} />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary-600 transition-colors">
                         {t('pages.home.ready_title')}
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
                         {t('pages.home.ready_desc')}
                     </p>
-                </div>
+                    <div className="mt-6 flex items-center gap-2 text-primary-600 font-semibold text-sm">
+                        {i18n.language === 'ar' ? 'ابدأ الآن' : 'Commencer maintenant'}
+                        <ArrowRight size={16} className={`group-hover:translate-x-1 transition-transform ${i18n.language === 'ar' ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />
+                    </div>
+                </button>
             </div>
 
             <div className="mt-12 opacity-80">

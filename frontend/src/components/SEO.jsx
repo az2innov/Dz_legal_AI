@@ -6,18 +6,23 @@ const SEO = ({ title, description, keywords, ogTitle, ogDescription, ogImage, ca
     const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
     const defaultDescription = "Plateforme d'intelligence artificielle dédiée au droit algérien. Analyse de documents, recherches juridiques et codes officiels.";
 
+    // Générer l'URL canonique par défaut si non fournie
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const finalCanonicalUrl = canonicalUrl || `https://www.dz-legal-ai.com${currentPath === '/' ? '' : currentPath}`;
+
     return (
         <Helmet>
             {/* Standard tags */}
             <title>{fullTitle}</title>
             <meta name="description" content={description || defaultDescription} />
             {keywords && <meta name="keywords" content={keywords} />}
+            <link rel="canonical" href={finalCanonicalUrl} />
 
             {/* Open Graph / Facebook */}
             <meta property="og:title" content={ogTitle || fullTitle} />
             <meta property="og:description" content={ogDescription || description || defaultDescription} />
+            <meta property="og:url" content={finalCanonicalUrl} />
             {ogImage && <meta property="og:image" content={ogImage} />}
-            {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
             {/* Twitter */}
             <meta name="twitter:title" content={ogTitle || fullTitle} />

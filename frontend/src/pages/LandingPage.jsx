@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, FileText, Book, ArrowRight } from 'lucide-react';
 import NewsCarousel from '../components/NewsCarousel';
+import SEO from '../components/SEO';
 
 const LandingPage = () => {
     const { t, i18n } = useTranslation();
@@ -11,6 +12,10 @@ const LandingPage = () => {
     return (
         // Padding top pt-20 pour ne pas être caché par le header fixe
         <div className="relative min-h-screen bg-[#0f172a] text-white font-sans overflow-x-hidden pt-20" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+            <SEO
+                title={t('landing.hero_title')}
+                description={t('landing.hero_subtitle')}
+            />
 
             {/* --- FOND ANIMÉ --- */}
             <div className="absolute inset-0 z-0 pointer-events-none"

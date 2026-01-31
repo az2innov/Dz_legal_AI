@@ -22,36 +22,35 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-[#0b1120] border-t border-gray-800 py-6 md:py-10 mt-auto text-white">
-      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
+    <footer className="bg-[#0b1120] border-t border-white/5 py-4 mt-auto text-white">
+      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 h-auto md:h-10">
 
         {/* Copyright & Creator */}
-        <div className="text-center md:text-start space-y-2">
-          <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-            <img src="/logo_w.png" alt="Logo" className="h-8 w-auto" />
-            <span className="text-lg font-bold">Dz Legal AI</span>
+        <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2">
+            <img src="/logo_w.png" alt="Logo" className="h-5 w-auto" />
+            <span className="text-sm font-semibold text-gray-200">Dz Legal AI</span>
           </div>
-          <p className="text-sm text-gray-400">
-            © {currentYear}. {t('footer.rights')}
+          <p className="text-[11px] text-gray-500 border-l border-white/10 pl-4 hidden md:block">
+            © {currentYear}. {t('footer.rights')} • {t('footer.copyright')} <a href="https://innov-num.pro" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">Innov-Num.pro</a>
           </p>
-          <p className="text-sm text-gray-500">
-            {t('footer.copyright')} <a href="https://innov-num.pro" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">Innov-Num.pro</a>
+          <p className="text-[10px] text-gray-500 md:hidden text-center">
+            © {currentYear}. Dz Legal AI
           </p>
         </div>
 
-        {/* Liens de contact mis en valeur */}
-        <div className="flex flex-col items-center md:items-end gap-4">
-          <h4 className="text-sm font-semibold uppercase tracking-wider text-gray-400">{t('footer.follow_us')}</h4>
-          <div className="flex items-center gap-3">
+        {/* Liens de contact rabaissés */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {socialLinks.map((link, index) => (
               <a
                 key={index}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`p-2.5 rounded-full transition-all transform hover:-translate-y-1 shadow-lg ${link.color}`}
+                className={`p-1.5 rounded-lg transition-all hover:-translate-y-0.5 opacity-60 hover:opacity-100 ${link.color}`}
               >
-                <link.icon size={20} />
+                <link.icon size={14} />
               </a>
             ))}
           </div>

@@ -254,8 +254,11 @@ async function forgotPassword(email) {
 
     if (userResult.rows.length > 0 && userResult.rows[0].is_active) {
         const token = crypto.randomBytes(32).toString('hex');
-        const expires = new Date(Date.now() + 60 * 60000);
-        await db.query("UPDATE users SET reset_password_token = ?, reset_password_expires = ? WHERE email = ?", [token, expires, cleanEmail]);
+        // Utilisation de TIMESTAMPADD (MySQL) pour éviter les décalages de fuseaux horaires entre JS et DB
+        await db.query(
+            "UPDATE users SET reset_password_token = ?, reset_password_expires = TIMESTAMPADD(HOUR, 1, NOW()) WHERE email = ?",
+            [token, cleanEmail]
+        );
 
         // Email Reset (Nouveau Template)
         await sendResetPasswordEmail(cleanEmail, token);

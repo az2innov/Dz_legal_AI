@@ -17,7 +17,7 @@ const pool = mysql.createPool({
   bigNumberStrings: false
 });
 
-console.log('--- 🐬 Mode MySQL Activé ---');
+console.log(`--- 🐬 Mode MySQL Activé --- (Host: ${process.env.MYSQL_HOST || 'localhost'})`);
 
 /**
  * Nettoie les paramètres pour MySQL : transforme undefined en null

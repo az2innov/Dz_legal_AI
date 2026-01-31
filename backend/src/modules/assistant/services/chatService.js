@@ -23,6 +23,8 @@ async function getUserSessions(userId) {
     return result.rows;
 }
 
+const ragService = require('./ragService');
+
 // 3. Récupérer les messages d'une session (FORCAGE TYPES)
 async function getSessionMessages(sessionId, userId) {
     const sId = parseInt(sessionId);
@@ -43,7 +45,8 @@ async function getSessionMessages(sessionId, userId) {
         [sId]
     );
 
-    return result.rows.map(msg => {
+    // ✅ RE-SIGNER LES URLS À LA VOLÉE POUR ÉVITER ExpiredToken
+    return Promise.all(result.rows.map(async (msg) => {
         let parsedSources = [];
         if (msg.sources) {
             if (Array.isArray(msg.sources)) {
@@ -57,9 +60,78 @@ async function getSessionMessages(sessionId, userId) {
                 }
             }
         }
+
+        // Si on a des sources, on tente de re-signer l'URL (même si gsUri est absent, generateSignedUrl tentera avec src.link)
+        if (parsedSources.length > 0) {
+            parsedSources = await Promise.all(parsedSources.map(async (src) => {
+                const uriToSign = src.gsUri || src.link;
+                if (uriToSign && uriToSign !== '#') {
+                    let newLink = await ragService.generateSignedUrl(uriToSign);
+
+                    // --- RÉ-APPLIQUER LES FRAGMENTS DE NAVIGATION ---
+                    let fragments = [];
+                    if (src.page) fragments.push(`page=${src.page}`);
+
+                    let articleNum = src.articleNum;
+                    let searchArt = src.searchArt;
+
+                    if (src.contentPreview) {
+                        const artMatch = src.contentPreview.match(/Art[^\d]{1,10}(\d+|1er)/i);
+                        if (artMatch) {
+                            articleNum = artMatch[1];
+
+                            // Nettoyage identique au ragService
+                            let cleanedSnippet = src.contentPreview
+                                .replace(/\s+([.,:!?;])/g, '$1')
+                                .replace(/([(])\s+/g, '$1')
+                                .replace(/\s+([)])/g, '$1')
+                                .replace(/['’]\s+/g, "'")
+                                .replace(/n[^\w]*°\s*/gi, "n° ")
+                                .replace(/\s+/g, ' ')
+                                .trim();
+
+                            const wordsForContext = cleanedSnippet.split(/\s+/);
+                            const artIdxInWords = wordsForContext.findIndex(w => w.toLowerCase().includes('art'));
+
+                            if (artIdxInWords !== -1) {
+                                let contextParts = wordsForContext.slice(artIdxInWords + 2, artIdxInWords + 7);
+                                if (contextParts[0] === '.' || contextParts[0] === '—' || contextParts[0] === '-') contextParts.shift();
+
+                                const context = contextParts.join(' ')
+                                    .replace(/'/g, "’")
+                                    .trim();
+
+                                searchArt = `Art. ${articleNum}. — ${context}`;
+                            } else {
+                                searchArt = `Art. ${articleNum}. —`;
+                            }
+                        }
+                    }
+
+                    if (searchArt) {
+                        const safeSearch = searchArt.replace(/["']/g, ' ').trim();
+                        fragments.push(`search="${encodeURIComponent(safeSearch)}"`);
+                    } else if (src.contentPreview && !src.page) {
+                        const searchTerms = src.contentPreview.split(/\s+/).slice(0, 3).join(' ').replace(/["']/g, '');
+                        if (searchTerms.length > 5) {
+                            fragments.push(`search="${encodeURIComponent(searchTerms)}"`);
+                        }
+                    }
+
+                    if (fragments.length > 0) {
+                        const fragmentStr = fragments.join('&');
+                        newLink = newLink.split('#')[0] + `#${fragmentStr}`;
+                    }
+
+                    return { ...src, link: newLink, articleNum, searchArt };
+                }
+                return src;
+            }));
+        }
+
         msg.sources = parsedSources;
         return msg;
-    });
+    }));
 }
 
 // 4. Sauvegarder un message

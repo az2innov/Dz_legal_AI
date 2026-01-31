@@ -1,35 +1,57 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+
+// Utilitaire pour nettoyer les variables d'environnement (enlève les guillemets accidentels du cPanel)
+const getEnv = (key, defaultValue = '') => {
+    let val = process.env[key] || defaultValue;
+    if (typeof val === 'string') {
+        val = val.trim();
+        // Enlève les guillemets ou apostrophes qui entourent la valeur
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+            return val.substring(1, val.length - 1);
+        }
+    }
+    return val;
+};
 
 // Configuration du transporteur
-const port = parseInt(process.env.EMAIL_PORT, 10) || 2525;
+const EMAIL_HOST = getEnv('EMAIL_HOST', 'mail.dz-legal-ai.com');
+const EMAIL_USER = getEnv('EMAIL_USER');
+const EMAIL_PASS = getEnv('EMAIL_PASS');
+const EMAIL_PORT = parseInt(getEnv('EMAIL_PORT', '465'), 10);
+const EMAIL_SECURE = getEnv('EMAIL_SECURE') === 'true' || EMAIL_PORT === 465;
+
 const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || "sandbox.smtp.mailtrap.io",
-    port: port,
-    secure: port === 465, // true for 465, false for other ports
+    host: EMAIL_HOST,
+    port: EMAIL_PORT,
+    secure: EMAIL_SECURE,
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: EMAIL_USER,
+        pass: EMAIL_PASS
     },
-    // Debug options pour logs console détaillés
+    // Options de résilience indispensables sur Octenium/cPanel
+    tls: {
+        rejectUnauthorized: false
+    },
     logger: true,
     debug: true
 });
 
-// Vérification immédiate de la connexion SMTP au démarrage (Console uniquement pour éviter les crashs FS)
+// Le log sera créé directement à la racine du dossier backend sur Octenium
+const debugFile = path.join(process.cwd(), 'debug_emails.txt');
+
+// Vérification de la connexion SMTP au démarrage
 transporter.verify(function (error, success) {
+    const timestamp = new Date().toISOString();
     if (error) {
-        console.error("🚨 ERREUR CRITIQUE SMTP (Connection Test):");
-        console.error(error);
-        console.error("Configuration utilisée:", {
-            host: process.env.EMAIL_HOST,
-            port: port,
-            secure: port === 465,
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS ? "****" : "MANQUANT"
-        });
+        const msg = `[${timestamp}] 🚨 ERREUR SMTP : ${error.message}\n`;
+        try { fs.appendFileSync(debugFile, msg); } catch (e) { }
+        console.error(msg);
     } else {
-        console.log("✅ Serveur SMTP prêt à envoyer des messages.");
+        const msg = `[${timestamp}] ✅ Serveur SMTP opérationnel.\n`;
+        try { fs.appendFileSync(debugFile, msg); } catch (sent) { }
+        console.log(msg);
     }
 });
 
@@ -78,17 +100,16 @@ const getHtmlTemplate = (title, bodyContent, actionLink = null, actionText = nul
     `;
 };
 
-const fs = require('fs');
-const path = require('path');
-// Le log sera créé directement à la racine du dossier backend sur Octenium
-const debugFile = path.join(process.cwd(), 'debug_emails.txt');
-
 // Fonction d'envoi de base
 const sendBaseEmail = async (to, subject, text, html) => {
     try {
-        let sender = process.env.EMAIL_FROM || 'no-reply@dzlegal.ai';
-        // Sécurité : si EMAIL_FROM n'est pas un email (ex: sandbox.mailtrap.io), on force une adresse valide
-        if (!sender.includes('@')) sender = 'no-reply@dzlegal.ai';
+        const defaultSender = getEnv('EMAIL_USER', 'no-reply@dz-legal-ai.com');
+        let sender = getEnv('EMAIL_FROM') || defaultSender;
+
+        // Si EMAIL_FROM est juste un nom, on construit une adresse valide avec l'email SMTP
+        if (!sender.includes('@')) {
+            sender = `"${sender}" <${defaultSender}>`;
+        }
 
         const fromAddress = sender.includes('<') ? sender : `"Dz Legal AI" <${sender}>`;
 
@@ -109,7 +130,7 @@ const sendBaseEmail = async (to, subject, text, html) => {
 // --- FONCTIONS EXPORTÉES ---
 
 const sendVerificationEmail = async (email, token) => {
-    const link = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
+    const link = `${getEnv('FRONTEND_URL')}/verify-email?token=${token}`;
     const html = getHtmlTemplate(
         "Bienvenue sur Dz Legal AI",
         "<p>Merci de rejoindre la première plateforme d'intelligence juridique en Algérie. Pour activer votre compte et sécuriser vos accès, veuillez confirmer votre adresse email.</p>",
@@ -131,7 +152,7 @@ const send2FACode = async (email, code) => {
 };
 
 const sendResetPasswordEmail = async (email, token) => {
-    const link = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const link = `${getEnv('FRONTEND_URL')}/reset-password?token=${token}`;
     const html = getHtmlTemplate(
         "Réinitialisation du mot de passe",
         "<p>Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le bouton ci-dessous pour en définir un nouveau.</p>",
@@ -142,8 +163,7 @@ const sendResetPasswordEmail = async (email, token) => {
 };
 
 const sendInvitationEmail = async (email, token) => {
-    const link = `${process.env.FRONTEND_URL}/register?invite=${token}`;
-    console.log(`[EmailService] Preparing invitation for ${email} with link: ${link}`);
+    const link = `${getEnv('FRONTEND_URL')}/register?invite=${token}`;
     const html = getHtmlTemplate(
         "Invitation à rejoindre un Groupe",
         "<p>Vous avez été invité à collaborer sur l'espace de travail d'un cabinet juridique sur Dz Legal AI.</p><p>Créez votre compte dès maintenant pour accéder aux dossiers partagés.</p>",
@@ -153,10 +173,8 @@ const sendInvitationEmail = async (email, token) => {
     await sendBaseEmail(email, "Invitation - Dz Legal AI", `Lien: ${link}`, html);
 };
 
-const sendEmail = sendBaseEmail;
-
 module.exports = {
-    sendEmail,
+    sendEmail: sendBaseEmail,
     sendVerificationEmail,
     send2FACode,
     sendResetPasswordEmail,
