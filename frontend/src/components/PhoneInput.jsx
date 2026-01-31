@@ -2,18 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Search } from 'lucide-react';
 
 const COUNTRIES = [
-    { code: 'DZ', name: 'Algérie', dial_code: '+213', flag: '🇩🇿' },
-    { code: 'FR', name: 'France', dial_code: '+33', flag: '🇫🇷' },
-    { code: 'TN', name: 'Tunisie', dial_code: '+216', flag: '🇹🇳' },
-    { code: 'MA', name: 'Maroc', dial_code: '+212', flag: '🇲🇦' },
-    { code: 'CA', name: 'Canada', dial_code: '+1', flag: '🇨🇦' },
-    { code: 'US', name: 'USA', dial_code: '+1', flag: '🇺🇸' },
-    { code: 'AE', name: 'UAE', dial_code: '+971', flag: '🇦🇪' },
-    { code: 'SA', name: 'Saudi Arabia', dial_code: '+966', flag: '🇸🇦' },
-    { code: 'QA', name: 'Qatar', dial_code: '+974', flag: '🇶🇦' },
-    { code: 'GB', name: 'UK', dial_code: '+44', flag: '🇬🇧' },
-    { code: 'DE', name: 'Germany', dial_code: '+49', flag: '🇩🇪' },
-    { code: 'ES', name: 'Spain', dial_code: '+34', flag: '🇪🇸' },
+    { code: 'DZ', name: 'Algérie', dial_code: '+213', flag: '🇩🇿', validation: { length: 9, startsWith: ['5', '6', '7'] } },
+    { code: 'FR', name: 'France', dial_code: '+33', flag: '🇫🇷', validation: { length: 9, startsWith: ['6', '7'] } },
+    { code: 'GB', name: 'UK', dial_code: '+44', flag: '🇬🇧', validation: { length: 10, startsWith: ['7'] } },
+    { code: 'TN', name: 'Tunisie', dial_code: '+216', flag: '🇹🇳', validation: { length: 8 } },
+    { code: 'MA', name: 'Maroc', dial_code: '+212', flag: '🇲🇦', validation: { length: 9 } },
+    { code: 'CA', name: 'Canada', dial_code: '+1', flag: '🇨🇦', validation: { minLength: 10 } },
+    { code: 'US', name: 'USA', dial_code: '+1', flag: '🇺🇸', validation: { minLength: 10 } },
+    { code: 'AE', name: 'UAE', dial_code: '+971', flag: '🇦🇪', validation: { minLength: 9 } },
+    { code: 'SA', name: 'Saudi Arabia', dial_code: '+966', flag: '🇸🇦', validation: { minLength: 9 } },
+    { code: 'QA', name: 'Qatar', dial_code: '+974', flag: '🇶🇦', validation: { minLength: 8 } },
+    { code: 'DE', name: 'Germany', dial_code: '+49', flag: '🇩🇪', validation: { minLength: 10 } },
+    { code: 'ES', name: 'Spain', dial_code: '+34', flag: '🇪🇸', validation: { length: 9 } },
 ];
 
 const PhoneInput = ({ value, onChange, placeholder, required, name = 'whatsappNumber' }) => {
@@ -50,14 +50,21 @@ const PhoneInput = ({ value, onChange, placeholder, required, name = 'whatsappNu
 
     const handlePhoneChange = (e) => {
         // Ne garder que les chiffres
-        const rawValue = e.target.value.replace(/[^0-9]/g, '');
+        let rawValue = e.target.value.replace(/[^0-9]/g, '');
+
+        // CORRECTION : Supprimer le 0 au début s'il est saisi (ex: 0555 -> 555)
+        if (rawValue.startsWith('0')) {
+            rawValue = rawValue.substring(1);
+        }
+
         setPhoneNumber(rawValue);
 
-        // Remonter la valeur complète au parent
+        // Remonter la valeur complète au parent avec métadonnées
         onChange({
             target: {
                 name: name,
-                value: selectedCountry.dial_code + rawValue
+                value: selectedCountry.dial_code + rawValue,
+                country: selectedCountry // Ajout des infos pays
             }
         });
     };
@@ -67,11 +74,12 @@ const PhoneInput = ({ value, onChange, placeholder, required, name = 'whatsappNu
         setIsOpen(false);
         setSearchQuery('');
 
-        // Mettre à jour avec le nouveau code pays
+        // Mettre à jour avec le nouveau code pays et métadonnées
         onChange({
             target: {
                 name: name,
-                value: country.dial_code + phoneNumber
+                value: country.dial_code + phoneNumber,
+                country: country
             }
         });
     };

@@ -1,0 +1,3 @@
+[2026-01-21T22:03:04.895Z] ✅ SUCCÈS : Email envoyé à validateur@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)
+[2026-01-24T17:20:19.413Z] ✅ SUCCÈS : Email envoyé à notaire@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)
+[2026-01-24T17:24:25.757Z] ✅ SUCCÈS : Email envoyé à juge.paris@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)

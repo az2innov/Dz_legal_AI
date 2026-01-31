@@ -78,6 +78,13 @@ const DocsPage = () => {
         const file = e.target.files[0];
         if (!file) return;
 
+        // Validation JS stricte (car on a retiré le accept HTML pour mobile)
+        if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+            alert(i18n.language === 'ar' ? 'يرجى تحميل ملف PDF فقط' : 'Veuillez sélectionner un fichier PDF uniquement.');
+            e.target.value = null; // Reset input
+            return;
+        }
+
         setIsUploading(true);
         try {
             const prompt = i18n.language === 'ar' ? 'حلل هذه الوثيقة' : 'Analyse ce document';
@@ -272,21 +279,30 @@ const DocsPage = () => {
                 </div>
 
                 <div className="mb-8">
-                    <label className={`flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl cursor-pointer bg-gray-50 dark:bg-gray-800/50 hover:bg-primary-50 dark:hover:bg-primary-900/10 hover:border-primary-400 transition-all group ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                        <div className="flex flex-col items-center">
+                    <div
+                        onClick={() => document.getElementById('file-upload-input').click()}
+                        className={`flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50 active:bg-gray-200 dark:active:bg-gray-800 transition-all cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                        <div className="flex flex-col items-center pointer-events-none">
                             {isUploading ? (
                                 <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
                             ) : (
                                 <>
-                                    <UploadCloud className="w-8 h-8 text-gray-400 group-hover:text-primary-500 mb-2" />
+                                    <UploadCloud className="w-8 h-8 text-gray-400 mb-2" />
                                     <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                        {i18n.language === 'ar' ? 'انقر لتحليل مستند جديد (PDF)' : 'Cliquez pour analyser un nouveau document (PDF)'}
+                                        {i18n.language === 'ar' ? 'انقر لاختيار ملف PDF' : 'Cliquez pour sélectionner un PDF'}
                                     </span>
                                 </>
                             )}
                         </div>
-                        <input type="file" className="hidden" onChange={handleFileUpload} accept=".pdf,image/*" />
-                    </label>
+                    </div>
+                    <input
+                        id="file-upload-input"
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileUpload}
+                        accept="application/pdf"
+                    />
                 </div>
 
                 {isLoadingList ? (

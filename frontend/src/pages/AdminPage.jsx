@@ -326,7 +326,7 @@ const AdminPage = () => {
                 </header>
 
                 {/* ONGLETS */}
-                <div className="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-800">
+                <div className="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-800 overflow-x-auto pb-1 scrollbar-hide">
                     {[
                         { id: 'dashboard', icon: LayoutDashboard, label: t('admin.tab_dashboard') },
                         { id: 'users', icon: Users, label: `${t('admin.tab_users')} (${users.length})` },
@@ -411,7 +411,7 @@ const AdminPage = () => {
 
                 {/* --- CONTENU 2 : TABLEAU UTILISATEURS --- */}
                 {activeTab === 'users' && (
-                    <div className="bg-white dark:bg-dark-card rounded-xl shadow overflow-hidden border border-gray-200 dark:border-gray-800">
+                    <div className="bg-white dark:bg-dark-card rounded-xl shadow overflow-x-auto border border-gray-200 dark:border-gray-800">
                         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead className="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-700 dark:text-gray-300">
                                 <tr>
@@ -462,7 +462,7 @@ const AdminPage = () => {
 
                 {/* --- CONTENU 3 : TABLEAU ORGANISATIONS --- */}
                 {activeTab === 'orgs' && (
-                    <div className="bg-white dark:bg-dark-card rounded-xl shadow overflow-hidden border border-gray-200 dark:border-gray-800">
+                    <div className="bg-white dark:bg-dark-card rounded-xl shadow overflow-x-auto border border-gray-200 dark:border-gray-800">
                         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead className="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-700 dark:text-gray-300">
                                 <tr>
@@ -521,7 +521,7 @@ const AdminPage = () => {
                                 <p className="text-gray-500 dark:text-gray-400">{t('admin.no_requests')}</p>
                             </div>
                         ) : (
-                            <div className="bg-white dark:bg-dark-card rounded-xl shadow overflow-hidden border border-gray-200 dark:border-gray-800">
+                            <div className="bg-white dark:bg-dark-card rounded-xl shadow overflow-x-auto border border-gray-200 dark:border-gray-800">
                                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                     <thead className="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-700 dark:text-gray-300">
                                         <tr>
@@ -601,7 +601,7 @@ const AdminPage = () => {
                             </button>
                         </div>
 
-                        <div className="bg-white dark:bg-dark-card rounded-xl shadow overflow-hidden border border-gray-200 dark:border-gray-800">
+                        <div className="bg-white dark:bg-dark-card rounded-xl shadow overflow-x-auto border border-gray-200 dark:border-gray-800">
                             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                 <thead className="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-700 dark:text-gray-300">
                                     <tr>

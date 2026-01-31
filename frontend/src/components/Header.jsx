@@ -5,7 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const Header = () => {
+const Header = ({ toggleMobileMenu }) => {
   const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
@@ -26,18 +26,27 @@ const Header = () => {
 
   // Note: On utilise 'sticky' au lieu de 'fixed' pour éviter que le header ne cache le haut du contenu
   return (
-    <header className={`h-20 px-4 sticky top-0 z-50 backdrop-blur-md flex items-center justify-between ${headerStyle}`}>
+    <header className={`h-16 md:h-20 px-4 sticky top-0 z-50 backdrop-blur-md flex items-center justify-between ${headerStyle}`}>
 
-      {/* 1. GAUCHE : Logo (Ou Titre de la page en cours ?) */}
-      {/* On masque le logo ici car il est déjà dans la Sidebar sur Desktop, mais utile sur mobile */}
-      <div className="flex items-center gap-2 cursor-pointer flex-shrink-0 md:hidden" onClick={() => navigate('/')}>
-        <img
-          src="/logo_w.png"
-          alt="Logo"
-          className="w-8 h-8 object-contain"
-          onError={(e) => { e.target.src = "/logo_d.png" }}
-        />
-        <span className="font-bold text-lg">Dz Legal AI</span>
+      {/* 1. GAUCHE : Menu Hamburger (Mobile) & Logo */}
+      <div className="flex items-center gap-3 cursor-pointer flex-shrink-0 md:hidden">
+        <button
+          onClick={toggleMobileMenu}
+          className="p-2 -ml-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Menu"
+        >
+          <Menu size={24} />
+        </button>
+
+        <div className="flex items-center gap-2" onClick={() => navigate('/')}>
+          <img
+            src="/logo_w.png"
+            alt="Logo"
+            className="w-8 h-8 object-contain"
+            onError={(e) => { e.target.src = "/logo_d.png" }}
+          />
+          <span className="font-bold text-lg">Dz Legal AI</span>
+        </div>
       </div>
 
       {/* Sur Desktop, on affiche le message de bienvenue */}

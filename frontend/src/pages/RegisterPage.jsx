@@ -23,6 +23,7 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const RegisterPage = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, country } = e.target;
     if (name === 'role') {
       // Si l'utilisateur choisit "Organisation"
       if (value === 'organization_account') {
@@ -48,6 +49,7 @@ const RegisterPage = () => {
       }
     } else {
       setFormData({ ...formData, [name]: value });
+      if (country) setSelectedCountry(country);
     }
   };
 
@@ -58,17 +60,58 @@ const RegisterPage = () => {
     setError('');
     setSuccess('');
 
+    // VALIDATION MOT DE PASSE
     if (!validatePassword(formData.password)) {
       setError(i18n.language === 'ar' ? "كلمة المرور ضعيفة..." : "Mot de passe faible (Min 8 chars, 1 chiffre, 1 symbole).");
       return;
+    }
+
+    // VALIDATION WHATSAPP DYNAMIQUE (Par pays)
+    if (selectedCountry && selectedCountry.validation) {
+      const { validation, dial_code, name: countryName } = selectedCountry;
+      const numberAfterPrefix = formData.whatsappNumber.replace(dial_code, '');
+
+      // 1. Longueur exacte
+      if (validation.length && numberAfterPrefix.length !== validation.length) {
+        setError(i18n.language === 'ar'
+          ? `رقم الهاتف غير صحيح (يجب أن يتكون من ${validation.length} أرقام بعد ${dial_code})`
+          : `Numéro ${countryName} invalide (doit avoir ${validation.length} chiffres après le ${dial_code}).`
+        );
+        return;
+      }
+
+      // 2. Longueur minimale
+      if (validation.minLength && numberAfterPrefix.length < validation.minLength) {
+        setError(i18n.language === 'ar'
+          ? `رقم الهاتف قصير جدًا (على الأقل ${validation.minLength} أرقام)`
+          : `Numéro ${countryName} trop court (min ${validation.minLength} chiffres).`
+        );
+        return;
+      }
+
+      // 3. Premier chiffre (startsWith)
+      if (validation.startsWith && !validation.startsWith.includes(numberAfterPrefix[0])) {
+        const allowed = validation.startsWith.join(' ou ');
+        setError(i18n.language === 'ar'
+          ? `رقم الهاتف غير صحيح (يجب أن يبدأ بـ ${validation.startsWith.join(' أو ')})`
+          : `Numéro ${countryName} invalide (doit commencer par ${allowed} après le ${dial_code}).`
+        );
+        return;
+      }
     }
 
     setIsLoading(true);
 
     try {
       await register({ ...formData, inviteToken });
-      setSuccess(t('auth.success_register'));
-      setTimeout(() => navigate('/login'), 2000);
+
+      // MESSAGE DE SUCCÈS RENFORCÉ (SPAM)
+      const successMsg = i18n.language === 'ar'
+        ? "تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب. (تحقق أيضًا من ملف SPAM / Indésirables)"
+        : "Compte créé ! Vérifiez vos emails pour l'activer. (Vérifiez AUSSI votre dossier SPAM / Indésirables)";
+
+      setSuccess(successMsg);
+      setTimeout(() => navigate('/login'), 5000); // 5 sec pour laisser le temps de lire
     } catch (err) {
       console.error(err);
       const msg = err.response?.data?.error || t('auth.error_register');

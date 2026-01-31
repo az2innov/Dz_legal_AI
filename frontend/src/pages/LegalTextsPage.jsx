@@ -111,7 +111,7 @@ const LegalTextsPage = () => {
     };
 
     return (
-        <div className="bg-[#0f172a] min-h-screen text-white pt-20 pb-20" dir={isAr ? 'rtl' : 'ltr'}>
+        <div className="bg-[#0f172a] min-h-screen text-white pt-20 pb-20 overflow-x-hidden" dir={isAr ? 'rtl' : 'ltr'}>
 
             {/* HERO SECTION */}
             <div className="text-center max-w-4xl mx-auto px-6 mb-16 relative">
@@ -232,7 +232,7 @@ const LegalTextsPage = () => {
                                             className="group flex justify-between items-center p-4 border-b border-gray-700/50 last:border-0 hover:bg-blue-500/5 transition-colors"
                                             dir={text.lang === 'ar' ? 'rtl' : 'ltr'}
                                         >
-                                            {/* Badge langue à gauche en LTR, à droite en RTL */}
+                                            {/* Badge langue à gauche en LTR, à droite en RTL - mais en flex, l'ordre suit le dir, donc ça devrait être bon automatiquement si on ne force pas flex-row-reverse */}
                                             <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded border opacity-50 flex-shrink-0 ${text.lang === 'ar' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'}`}>
                                                 {text.lang === 'ar' ? 'AR' : 'FR'}
                                             </span>

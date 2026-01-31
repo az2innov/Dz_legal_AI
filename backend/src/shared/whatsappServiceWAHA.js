@@ -198,8 +198,38 @@ async function startWAHASession() {
     }
 }
 
+/**
+ * Envoyer un message texte simple via WhatsApp
+ * @param {string} phoneNumber - Format international
+ * @param {string} text - Contenu du message
+ */
+async function sendSimpleMessage(phoneNumber, text) {
+    try {
+        let cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+        if (cleanNumber.length === 10 && (cleanNumber.startsWith('05') || cleanNumber.startsWith('06') || cleanNumber.startsWith('07'))) {
+            cleanNumber = '213' + cleanNumber.substring(1);
+        }
+        const chatId = `${cleanNumber}@c.us`;
+
+        const headers = { 'Content-Type': 'application/json' };
+        if (WAHA_API_KEY) headers['X-Api-Key'] = WAHA_API_KEY;
+
+        const response = await axios.post(
+            `${WAHA_URL}/api/sendText`,
+            { session: WAHA_SESSION, chatId: chatId, text: text },
+            { timeout: 3000, headers: headers }
+        );
+
+        return { success: true, messageId: response.data?.id };
+    } catch (error) {
+        console.error('[WAHA] ❌ Erreur sendSimpleMessage:', error.message);
+        return { success: false, error: error.message };
+    }
+}
+
 module.exports = {
     send2FACode,
+    sendSimpleMessage,
     checkWAHAStatus,
     startWAHASession
 };

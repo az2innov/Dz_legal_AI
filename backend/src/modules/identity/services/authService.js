@@ -5,7 +5,7 @@ const crypto = require('crypto');
 // IMPORT DES NOUVELLES FONCTIONS EMAILS (Template Pro)
 const { sendVerificationEmail, send2FACode, sendResetPasswordEmail } = require('../../../shared/emailService');
 // Service WhatsApp : WAHA uniquement (remplace Twilio)
-const { send2FACode: sendWhatsApp2FA } = require('../../../shared/whatsappServiceWAHA');
+const { send2FACode: sendWhatsApp2FA, sendSimpleMessage: sendWhatsAppMessage } = require('../../../shared/whatsappServiceWAHA');
 
 
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -19,6 +19,27 @@ async function register(data) {
 
     const cleanEmail = email.toLowerCase().trim();
     const cleanPassword = password.trim();
+
+    // NORMALISATION WHATSAPP (Correction des 0 excessifs pour tous les pays)
+    let cleanWhatsApp = (whatsappNumber || '').replace(/[^0-9+]/g, '');
+
+    // Si format +XXX... on vérifie si le chiffre après l'indicatif est un 0
+    if (cleanWhatsApp.startsWith('+')) {
+        // Liste des indicatifs connus (on peut faire plus simple : trouver le premier 0 après le début)
+        // Mais restons prudents : si le numéro commence par +2130..., +330..., etc.
+        // On cherche l'indicatif dans la chaîne
+        const dialCodes = ['+213', '+33', '+44', '+216', '+212', '+1', '+971', '+966', '+974', '+49', '+34'];
+        for (const code of dialCodes) {
+            if (cleanWhatsApp.startsWith(code)) {
+                let numberPart = cleanWhatsApp.replace(code, '');
+                if (numberPart.startsWith('0')) {
+                    numberPart = numberPart.substring(1);
+                    cleanWhatsApp = code + numberPart;
+                }
+                break;
+            }
+        }
+    }
 
     const checkUser = await db.query('SELECT id FROM users WHERE email = ?', [cleanEmail]);
     if (checkUser.rows.length > 0) throw new Error('Cet email est déjà utilisé.');
@@ -73,7 +94,7 @@ async function register(data) {
         `;
 
         const userRes = await client.query(userQuery, [
-            cleanEmail, passwordHash, fullName, professionCardId, role, verificationToken, organizationId, whatsappNumber
+            cleanEmail, passwordHash, fullName, professionCardId, role, verificationToken, organizationId, cleanWhatsApp
         ]);
         const userId = userRes.rows.insertId;
 
@@ -87,11 +108,15 @@ async function register(data) {
 
         await client.commit();
 
-        // E. Envoi Email (Nouveau Template)
+        // E. Envoi Email
         await sendVerificationEmail(cleanEmail, verificationToken);
 
+        // F. Envoi Message WhatsApp de Bienvenue (Reminder Spam)
+        const welcomeText = `👋 *Bienvenue sur Dz Legal AI !*\n\nMerci de votre inscription, *${fullName}*.\n\n📧 Un email de confirmation vient de vous être envoyé à *${cleanEmail}*.\n\n⚠️ *IMPORTANT* : Si vous ne le voyez pas, vérifiez bien votre dossier *SPAM / Courriers Indésirables*.\n\nÀ tout de suite sur la plateforme !`;
+        await sendWhatsAppMessage(cleanWhatsApp, welcomeText);
+
         // On renvoie un objet minimal pour le user
-        return { id: userId, email: cleanEmail, full_name: fullName, whatsapp_number: whatsappNumber };
+        return { id: userId, email: cleanEmail, full_name: fullName, whatsapp_number: cleanWhatsApp };
 
     } catch (error) {
         await client.rollback();
@@ -122,6 +147,7 @@ async function login({ email, password }) {
 
     if (!user) throw new Error('Email ou mot de passe incorrect.');
     if (!user.is_active) throw new Error("Compte désactivé.");
+    if (!user.is_verified) throw new Error("Veuillez valider votre compte via l'email de confirmation envoyé lors de l'inscription.");
 
     const isMatch = await bcrypt.compare(password.trim(), user.password_hash);
     if (!isMatch) throw new Error('Email ou mot de passe incorrect.');

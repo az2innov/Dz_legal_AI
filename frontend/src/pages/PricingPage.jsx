@@ -7,6 +7,7 @@ import ContactSalesModal from '../components/ContactSalesModal';
 import PlanChangeRequestModal from '../components/PlanChangeRequestModal';
 import MyPlanRequests from '../components/MyPlanRequests';
 import billingService from '../services/billingService';
+import SEO from '../components/SEO';
 
 const PricingPage = () => {
   const { t, i18n } = useTranslation();
@@ -158,8 +159,11 @@ const PricingPage = () => {
   ];
 
   return (
-    <div className="py-16 px-4">
-
+    <div className={`min-h-screen bg-[#0a0a0b] text-white pt-24 pb-12 ${i18n.language === 'ar' ? 'font-arabic' : ''}`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+      <SEO
+        title={t('plans.title')}
+        description="Découvrez nos plans d'abonnement pour accéder à l'intelligence artificielle juridique algérienne. Des offres adaptées aux étudiants et aux professionnels."
+      />
       <div className="max-w-6xl mx-auto mb-8">
         <button
           onClick={() => navigate('/')}

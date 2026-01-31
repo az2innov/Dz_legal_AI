@@ -145,12 +145,13 @@ const ChatPage = () => {
   }, [messages, isLoading]);
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 relative">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 relative" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="flex flex-1 overflow-hidden">
         {/* SIDEBAR HISTORIQUE - Amélioration visuelle */}
         <div className={`
-        absolute inset-y-0 left-0 z-20 w-72 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 border-r border-gray-200 dark:border-gray-700 shadow-xl transform transition-all duration-300 ease-in-out md:relative md:translate-x-0
-        ${isSidebarOpen ? 'translate-x-0' : (i18n.language === 'ar' ? 'translate-x-full md:translate-x-0' : '-translate-x-full md:translate-x-0')}
+        absolute inset-y-0 z-20 w-72 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 border-r border-gray-200 dark:border-gray-700 shadow-xl transform transition-all duration-300 ease-in-out md:relative md:translate-x-0
+        ${i18n.language === 'ar' ? 'right-0 border-l border-r-0' : 'left-0'}
+        ${isSidebarOpen ? 'translate-x-0' : (i18n.language === 'ar' ? 'translate-x-full' : '-translate-x-full')}
       `}>
           <div className="p-4 flex flex-col h-full">
             {/* Bouton Nouvelle conversation avec meilleur design */}
@@ -212,19 +213,24 @@ const ChatPage = () => {
             <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
               <Menu size={24} />
             </button>
-            <span className="font-bold text-gray-800 dark:text-gray-100 text-center flex-1">Dz Legal Chat</span>
+            <div className="flex flex-col items-center flex-1 min-w-0 px-2">
+              <span className="font-bold text-gray-800 dark:text-gray-100 truncate w-full text-center">
+                {currentSessionId ? (sessions.find(s => s.id === currentSessionId)?.title || t('pages.chat.title', 'Dz Legal Assistant')) : t('pages.chat.title', 'Dz Legal Assistant')}
+              </span>
+              {currentSessionId && <span className="text-[10px] text-gray-500 uppercase tracking-widest">{t('pages.chat.history', 'Historique')}</span>}
+            </div>
             <div className="w-10"></div>
           </div>
 
           {/* Zone de messages - Centrée avec largeur maximale */}
           <div className="flex-1 overflow-y-auto px-2 md:px-3 custom-scrollbar">
             {/* Container avec largeur max */}
-            <div className="max-w-4xl py-6 space-y-4">
+            <div className="max-w-4xl mx-auto py-6 space-y-4">
               {messages.map((msg, idx) => {
-                const isAr = isTextArabic(msg.content);
+                const isArText = isTextArabic(msg.content);
                 const isUser = msg.role === 'user';
                 return (
-                  <div key={idx} className={`flex gap-3 ${isUser ? (i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse') : (i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row')}`}>
+                  <div key={idx} className={`flex gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
                     {/* Avatar */}
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-md ${isUser
                       ? 'bg-gradient-to-br from-primary-600 to-primary-700 text-white'
@@ -234,7 +240,7 @@ const ChatPage = () => {
                     </div>
 
                     {/* Message container */}
-                    <div className={`flex flex-col flex-1 max-w-[80%] ${isUser ? (i18n.language === 'ar' ? 'items-start' : 'items-end') : (i18n.language === 'ar' ? 'items-end' : 'items-start')}`}>
+                    <div className={`flex flex-col flex-1 max-w-[80%] ${isUser ? 'items-end' : 'items-start'}`}>
                       {/* Bulle de message */}
                       <div
                         className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${isUser
@@ -243,7 +249,7 @@ const ChatPage = () => {
                             ? 'bg-red-50 text-red-900 border border-red-200 dark:bg-red-900/20 dark:text-red-200 dark:border-red-800'
                             : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700'
                           }`}
-                        style={{ direction: isAr ? 'rtl' : 'ltr', textAlign: isAr ? 'right' : 'left' }}
+                        style={{ direction: isArText ? 'rtl' : 'ltr', textAlign: isArText ? 'right' : 'left' }}
                       >
                         {msg.content}
                       </div>
@@ -305,7 +311,7 @@ const ChatPage = () => {
 
           {/* Input zone - Centrée avec largeur max */}
           <div className="px-2 md:px-3 py-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-t border-gray-200 dark:border-gray-800 sticky bottom-0">
-            <form onSubmit={handleSend} className="flex gap-3 max-w-4xl">
+            <form onSubmit={handleSend} className="flex gap-3 max-w-4xl mx-auto">
               <input
                 ref={inputRef}
                 type="text"

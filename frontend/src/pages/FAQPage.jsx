@@ -3,19 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, ArrowLeft, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ContactSupportModal from '../components/ContactSupportModal';
+import SEO from '../components/SEO';
 
 const FAQItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { i18n } = useTranslation();
   return (
     <div className="border-b border-white/10 last:border-0">
       <button
-        className="w-full flex justify-between items-center py-5 text-left focus:outline-none group"
+        className={`w-full flex justify-between items-center py-5 focus:outline-none group ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className={`text-lg font-medium transition-colors ${isOpen ? 'text-blue-400' : 'text-gray-200 group-hover:text-white'}`}>
           {question}
         </span>
-        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'transform rotate-180 text-blue-400' : ''}`} />
+        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'transform rotate-180 text-blue-400' : ''} bg-transparent`} />
       </button>
 
       {/* Animation d'ouverture simple */}
@@ -58,7 +60,11 @@ const FAQPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white flex flex-col font-sans relative overflow-hidden" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className={`min-h-screen bg-[#0a0a0b] text-white pt-24 pb-12 ${i18n.language === 'ar' ? 'font-arabic' : ''}`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+      <SEO
+        title={t('faq.title')}
+        description="Trouvez les réponses à vos questions sur Dz Legal AI, l'intelligence artificielle juridique algérienne."
+      />
 
       {/* --- FOND IDENTIQUE À LA LANDING PAGE --- */}
       {/* Grille */}

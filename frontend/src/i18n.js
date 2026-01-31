@@ -716,8 +716,27 @@ const resources = {
   }
 };
 
+const countryDetector = {
+  name: 'countryDetector',
+  lookup() {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz === 'Africa/Algiers') {
+        console.log("[i18n] Timezone detected: Africa/Algiers -> Defaulting to 'ar'");
+        return 'ar';
+      }
+    } catch (e) {
+      console.warn("[i18n] Error detecting timezone", e);
+    }
+    return undefined;
+  }
+};
+
+const languageDetector = new LanguageDetector();
+languageDetector.addDetector(countryDetector);
+
 i18n
-  .use(LanguageDetector)
+  .use(languageDetector)
   .use(initReactI18next)
   .init({
     resources,
@@ -727,11 +746,13 @@ i18n
     load: 'languageOnly',
     interpolation: { escapeValue: false },
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage', 'countryDetector', 'navigator'],
       caches: ['localStorage']
     }
   }, (err, t) => {
-    if (i18n.language === 'ar') {
+    // Forcer la direction RTL/LTR sur l'élément racine dès le chargement
+    const lang = i18n.language || 'fr';
+    if (lang.startsWith('ar')) {
       document.documentElement.dir = 'rtl';
       document.documentElement.lang = 'ar';
     } else {
