@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Lock, Mail, User, Briefcase, Loader2, Languages, Building2, MapPin, FileText, MessageCircle } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import PhoneInput from '../components/PhoneInput';
+import { analytics } from '../services/analyticsService';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -104,6 +105,7 @@ const RegisterPage = () => {
 
     try {
       await register({ ...formData, inviteToken });
+      analytics.trackSignUp(formData.role);
 
       // MESSAGE DE SUCCÈS RENFORCÉ (SPAM)
       const successMsg = i18n.language === 'ar'

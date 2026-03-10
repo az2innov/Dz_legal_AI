@@ -1,0 +1,1701 @@
+
+[2026-02-06T14:43:44.029Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T14:43:44.031Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T14:43:46.316Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Mariage Filiation Résidence",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:43:46.317Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Mariage Filiation Résidence",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:43:46.319Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Comment puis-je obtenir la nationalité algérienne ?",
+  "finalRagQuery": "Comment puis-je obtenir la nationalité algérienne (Code de la Nationalité (Ordonnance 70-86) Acquisition Naturalisation Mariage Filiation Résidence)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T14:43:46.320Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+
+------------------------------------------
+
+[2026-02-06T14:43:49.564Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "( 3 ) <b>Naturalisation</b> Art . 10. - L&#39;étranger qui en formule la demande , peut acquérir la <b>nationalité algérienne</b> , à condition : 1º d&#39;avoir sa <b>résidence</b> en&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Loi n° 14-08 modifiant et complétant l'ordonnance n° 70-20 relative à l'état civil",
+    "link": "gs://legaldz/0000023.pdf",
+    "snippet": "24 Chaoual 1435 20 août 2014 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 49 3 9 LOIS Loi n ° 14-08 du 13 Chaoual&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "... <b>mariage</b> . Il en sera de même du <b>mariage</b> contracté en pays étranger entre un <b>algérien</b> et une étrangère , s&#39;il a été célébré par les agents diplomatiques&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi n° 89-28 relative aux réunions et manifestations publiques",
+    "link": "gs://legaldz/0000028.pdf",
+    "snippet": "34 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 17 26 Rajab 1442 10 mars 2021 8 - Un certificat médical délivré à l&#39;intéressé par&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Projet de Révision de la Constitution-mai 2020",
+    "link": "gs://legaldz/0000005.pdf",
+    "snippet": "... avoir acquis une <b>nationalité</b> étrangère ; jouir uniquement de la <b>nationalité algérienne</b> d&#39;origine et attester de la <b>nationalité algérienne</b> d&#39;origine du père&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T14:44:37.244Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T14:44:37.245Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "كيف يمكنني الحصول على الجنسية الجزائرية؟",
+  "isArabic": true
+}
+------------------------------------------
+
+[2026-02-06T14:44:38.843Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "قانون الجنسية (الأمر 70-86)",
+  "keywords": "اكتساب الجنسية التجنس الزواج الولادة الإقامة",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:44:38.845Z] === INTENT RESULT ===
+{
+  "targetCode": "قانون الجنسية (الأمر 70-86)",
+  "keywords": "اكتساب الجنسية التجنس الزواج الولادة الإقامة",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:44:38.846Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "كيف يمكنني الحصول على الجنسية الجزائرية؟",
+  "finalRagQuery": "كيف يمكنني الحصول على الجنسية الجزائرية (قانون الجنسية (الأمر 70-86) اكتساب الجنسية التجنس الزواج الولادة الإقامة)",
+  "isArabic": true,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T14:44:38.848Z] === PREAMBLE SENT TO AI ===
+أنت "المساعد الذكي" لـ Dz Legal AI.
+                                    مهمتك: تقديم ملخص واضح ومفيد للمعلومات الموجودة في النصوص.
+                                    - تجنب المقدمات الطويلة (مثل "بصفتي...").
+                                    - ادخل في صلب الموضوع مباشرة.
+                                    - إذا كانت النصوص تحتوي على الإجابة (مثل شروط أو خطوات)، اذكرها بوضوح واختصار.
+                                    - استشهد بالمصادر [1] عند الضرورة.
+                                    سياق المحادثة السابقة:
+Assistant: "مرحبًا بك. أنا مساعدك القانوني الذكي. كيف يمكنني مساعدتك اليوم؟"
+
+------------------------------------------
+
+[2026-02-06T14:44:42.188Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "مشروع تمهيدي لتعديل الدستور - ماي 2020",
+    "link": "gs://legaldz/0000129.pdf",
+    "snippet": "المادة 36 ( 33 ) سابقا ) 1. <b>الجنسية الجزائرية</b> ، معرفة بالقانون . 2. يحدد القانون شروط <b>اكتساب الجنسية الجزائرية</b> ، والاحتفاظ بها ، أو فقدانها ، أو التجريد منها ...."
+  },
+  {
+    "rank": 2,
+    "title": "مشروع تعديل الدستور",
+    "link": "gs://legaldz/0000134.pdf",
+    "snippet": "... <b>في</b> الحياة السياسية والاقتصادية والاجتماعية ، والثقافية . المادة 36 : <b>الجنسية الجزائرية</b> معرفة بالقانون . يحدد القانون شروط <b>اكتساب</b> الجنسيّة الجزائريّة&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "قانون رقم 14-08 يعدل و يتمم الأمر رقم 70-20 و المتعلق الحالة المدنية",
+    "link": "gs://legaldz/0000100.pdf",
+    "snippet": "عقود <b>الزواج</b> ، والوفاة <b>في</b> عقود الوفيات عندما تكون معروفة . ... <b>الجنسية الجزائرية</b> . الباقي بدون تغيير ... لا يحسب يوم <b>الولادة في</b> الآجال المحددة <b>في</b> الفقرات الـسـابـقـة&..."
+  },
+  {
+    "rank": 4,
+    "title": "مرسوم إصدار التعديل الدستوري-2020",
+    "link": "gs://legaldz/0000095.pdf",
+    "snippet": "... <b>في</b> الحياة السياسية والاقتصادية والاجتماعية ، والثقافية . المادة 36 : <b>الجنسية الجزائرية</b> معرفة بالقانون . يحدد القانون شروط <b>اكتساب</b> الجنسيّة الجزائريّة&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "التعديل الدستوري لسنة 2016",
+    "link": "gs://legaldz/0000130.pdf",
+    "snippet": "شروط <b>اكتساب الجنسية الجزائرية</b> ، والاحتفاظ بها ، أو فقدانها ، أو إسقاطها ، محددة بالقانون . المادة 34 : تستهدف المؤسسات ضمان مساواة كل المواطنين والمواطنات <b>في</b>&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T14:46:42.305Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T14:46:42.309Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "كيف يمكنني الحصول على الجنسية الجزائرية؟ كيف يمكنني الحصول على الجنسية الجزائرية؟",
+  "isArabic": true
+}
+------------------------------------------
+
+[2026-02-06T14:46:43.414Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "قانون الجنسية (الأمر 70-86)",
+  "keywords": "اكتساب الجنسية التجنس الزواج الولادة الإقامة",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:46:43.415Z] === INTENT RESULT ===
+{
+  "targetCode": "قانون الجنسية (الأمر 70-86)",
+  "keywords": "اكتساب الجنسية التجنس الزواج الولادة الإقامة",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:46:43.415Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "كيف يمكنني الحصول على الجنسية الجزائرية؟",
+  "finalRagQuery": "كيف يمكنني الحصول على الجنسية الجزائرية كيف يمكنني الحصول على الجنسية الجزائرية (قانون الجنسية (الأمر 70-86) اكتساب الجنسية التجنس الزواج الولادة الإقامة)",
+  "isArabic": true,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T14:46:43.416Z] === PREAMBLE SENT TO AI ===
+أنت "المساعد الذكي" لـ Dz Legal AI.
+                                    مهمتك: تقديم ملخص واضح ومفيد للمعلومات الموجودة في النصوص.
+                                    - تجنب المقدمات الطويلة (مثل "بصفتي...").
+                                    - ادخل في صلب الموضوع مباشرة.
+                                    - إذا كانت النصوص تحتوي على الإجابة (مثل شروط أو خطوات)، اذكرها بوضوح واختصار.
+                                    - استشهد بالمصادر [1] عند الضرورة.
+                                    سياق المحادثة السابقة:
+User: "كيف يمكنني الحصول على الجنسية الجزائرية؟"
+
+------------------------------------------
+
+[2026-02-06T14:46:46.510Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "مشروع تمهيدي لتعديل الدستور - ماي 2020",
+    "link": "gs://legaldz/0000129.pdf",
+    "snippet": "المادة 36 ( 33 ) سابقا ) 1. <b>الجنسية الجزائرية</b> ، معرفة بالقانون . 2. يحدد <b>القانون</b> شروط <b>اكتساب الجنسية الجزائرية</b> ، والاحتفاظ بها ، أو فقدانها ، أو التجريد منها ...."
+  },
+  {
+    "rank": 2,
+    "title": "مشروع تعديل الدستور",
+    "link": "gs://legaldz/0000134.pdf",
+    "snippet": "... <b>في</b> الحياة السياسية والاقتصادية والاجتماعية ، والثقافية . المادة 36 : <b>الجنسية الجزائرية</b> معرفة بالقانون . يحدد <b>القانون</b> شروط <b>اكتساب</b> الجنسيّة الجزائريّة&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "قانون رقم 14-08 يعدل و يتمم الأمر رقم 70-20 و المتعلق الحالة المدنية",
+    "link": "gs://legaldz/0000100.pdf",
+    "snippet": "عقود <b>الزواج</b> ، والوفاة <b>في</b> عقود الوفيات عندما تكون معروفة . ... <b>الجنسية الجزائرية</b> . الباقي بدون تغيير ... لا يحسب يوم <b>الولادة في</b> الآجال المحددة <b>في</b> الفقرات الـسـابـقـة&..."
+  },
+  {
+    "rank": 4,
+    "title": "مرسوم إصدار التعديل الدستوري-2020",
+    "link": "gs://legaldz/0000095.pdf",
+    "snippet": "... <b>في</b> الحياة السياسية والاقتصادية والاجتماعية ، والثقافية . المادة 36 : <b>الجنسية الجزائرية</b> معرفة بالقانون . يحدد <b>القانون</b> شروط <b>اكتساب</b> الجنسيّة الجزائريّة&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "التعديل الدستوري لسنة 2016",
+    "link": "gs://legaldz/0000130.pdf",
+    "snippet": "شروط <b>اكتساب الجنسية الجزائرية</b> ، والاحتفاظ بها ، أو فقدانها ، أو إسقاطها ، محددة بالقانون . المادة 34 : تستهدف المؤسسات ضمان مساواة كل المواطنين والمواطنات <b>في</b>&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T14:47:24.179Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T14:47:24.180Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T14:47:25.758Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Mariage Filiation Résidence",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:47:25.761Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Mariage Filiation Résidence",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:47:25.764Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Comment puis-je obtenir la nationalité algérienne ?",
+  "finalRagQuery": "Comment puis-je obtenir la nationalité algérienne (Code de la Nationalité (Ordonnance 70-86) Acquisition Naturalisation Mariage Filiation Résidence)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T14:47:25.765Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+
+------------------------------------------
+
+[2026-02-06T14:47:29.298Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "( 3 ) <b>Naturalisation</b> Art . 10. - L&#39;étranger qui en formule la demande , peut acquérir la <b>nationalité algérienne</b> , à condition : 1º d&#39;avoir sa <b>résidence</b> en&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Loi n° 14-08 modifiant et complétant l'ordonnance n° 70-20 relative à l'état civil",
+    "link": "gs://legaldz/0000023.pdf",
+    "snippet": "24 Chaoual 1435 20 août 2014 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 49 3 9 LOIS Loi n ° 14-08 du 13 Chaoual&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "... <b>mariage</b> . Il en sera de même du <b>mariage</b> contracté en pays étranger entre un <b>algérien</b> et une étrangère , s&#39;il a été célébré par les agents diplomatiques&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi n° 89-28 relative aux réunions et manifestations publiques",
+    "link": "gs://legaldz/0000028.pdf",
+    "snippet": "34 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 17 26 Rajab 1442 10 mars 2021 8 - Un certificat médical délivré à l&#39;intéressé par&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Projet de Révision de la Constitution-mai 2020",
+    "link": "gs://legaldz/0000005.pdf",
+    "snippet": "... avoir acquis une <b>nationalité</b> étrangère ; jouir uniquement de la <b>nationalité algérienne</b> d&#39;origine et attester de la <b>nationalité algérienne</b> d&#39;origine du père&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T14:47:45.735Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T14:47:45.735Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ? Est ce qu'il y a des nationalités qui sont exclues des ses dispositions?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T14:47:47.797Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Conditions",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:47:47.800Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Conditions",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T14:47:47.803Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Est ce qu'il y a des nationalités qui sont exclues des ses dispositions?",
+  "finalRagQuery": "Comment puis-je obtenir la nationalité algérienne Est ce qu'il y a des nationalités qui sont exclues des ses dispositions (Code de la Nationalité (Ordonnance 70-86) Acquisition Naturalisation Filiation Mariage Conditions)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T14:47:47.804Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+User: "Comment puis-je obtenir la nationalité algérienne ?"
+Assistant: "La nationalité algérienne est définie par la loi [5, 6, 7, 8]. Les conditions d'acquisition, de conservation, de perte et de déchéance de la nationalité algérienne sont déterminées par la loi [5, 9].
+
+Voici les différentes manières d'acquérir la nationalité algérienne :
+
+*   **Par mariage** : La nationalité algérienne peut s'acquérir par mariage avec un Algérien ou une Algérienne, par décret, sous certaines conditions. Il faut prouver que le mariage est légal et effectivement établi depuis au moins trois ans au moment de la demande de naturalisation [1].
+*   **Par filiation** : Lorsque la nationalité algérienne est revendiquée à titre de nationalité d'origine, elle peut être prouvée par la filiation découlant de deux ascendants en ligne paternelle, nés en Algérie et y ayant joui du statut musulman [1].
+*   **Par résidence** : Pour certaines fonctions ou candidatures, une résidence exclusive et permanente en Algérie est requise. Par exemple, pour être électeur, il faut être Algérien et avoir 18 ans révolus [4]. Pour certaines hautes responsabilités de l'État, une résidence permanente exclusive en Algérie d'au moins dix ans précédant le dépôt de la candidature est nécessaire [5, 6].
+
+L'ordonnance n° 70-86 du 15 décembre 1970, modifiée et complétée, porte le code de la nationalité algérienne [2]."
+
+------------------------------------------
+
+[2026-02-06T14:47:50.599Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "( Nouveau ) - La <b>nationalité algérienne</b> peut s&#39;acquérir par le <b>mariage</b> ... La demande <b>est</b> adressée au ministre de la justice <b>qui</b> ... demande de <b>naturalisation</b>&nb..."
+  },
+  {
+    "rank": 2,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "Art . 95. - Tout acte de l&#39;etat civil des algériens et des étrangers , établi en pays étranger , fait foi , s&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Nouvelle Constitution 2016",
+    "link": "gs://legaldz/0000006.pdf",
+    "snippet": "27 Joumada El Oula 1437 7 mars 2016 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 14 9 Art . 29 . L&#39;Algérie se défend&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi n° 14-08 modifiant et complétant l'ordonnance n° 70-20 relative à l'état civil",
+    "link": "gs://legaldz/0000023.pdf",
+    "snippet": "24 Chaoual 1435 20 août 2014 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 49 3 9 LOIS Loi n ° 14-08 du 13 Chaoual&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Constitution de 1989",
+    "link": "gs://legaldz/0000010.pdf",
+    "snippet": "Les <b>conditions</b> d&#39;<b>acquisition</b> , de conservation , de perte et de déchéance de la <b>nationalité algérienne sont</b> déterminées par la loi . Article 30 . Les&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T17:40:07.547Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T17:40:07.548Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T17:40:09.057Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Déclaration",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T17:40:09.058Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Déclaration",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T17:40:09.058Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Comment puis-je obtenir la nationalité algérienne ?",
+  "finalRagQuery": "Comment puis-je obtenir la nationalité algérienne (Code de la Nationalité (Ordonnance 70-86) Acquisition Naturalisation Filiation Mariage Déclaration)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T17:40:09.059Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+
+------------------------------------------
+
+[2026-02-06T17:40:12.310Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "CHAPITRE III De l&#39;<b>acquisition</b> de la <b>nationalité algérienne</b> De l&#39;<b>acquisition</b> de la <b>nationalité</b> par le <b>mariage</b> ( 1 ) Article 9 : Abrogé&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Loi n° 14-08 modifiant et complétant l'ordonnance n° 70-20 relative à l'état civil",
+    "link": "gs://legaldz/0000023.pdf",
+    "snippet": "24 Chaoual 1435 20 août 2014 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 49 3 9 LOIS Loi n ° 14-08 du 13 Chaoual&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "Il en sera de même du <b>mariage</b> contracté en pays étranger entre un <b>algérien</b> ... Toutefois , lorsque le conjoint étranger n&#39;a pas la <b>nationalité</b> ... <b>déclaration</b> , il&nbsp..."
+  },
+  {
+    "rank": 4,
+    "title": "Loi n° 89-28 relative aux réunions et manifestations publiques",
+    "link": "gs://legaldz/0000028.pdf",
+    "snippet": "34 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 17 26 Rajab 1442 10 mars 2021 8 - Un certificat médical délivré à l&#39;intéressé par&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Déclaration du 1 Novembre 1954",
+    "link": "gs://legaldz/0000020.pdf",
+    "snippet": "1 ) La reconnaissance de la <b>nationalité algérienne</b> par une <b>déclaration</b> ... algérienne , une et indivisible . 3 ) La création d&#39;un climat de confiance par&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T17:40:22.504Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T17:40:22.504Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ? Est ce qu'il y a des nationalités qui sont exclues des ses dispositions?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T17:40:23.770Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Conditions",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T17:40:23.771Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Conditions",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T17:40:23.771Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Est ce qu'il y a des nationalités qui sont exclues des ses dispositions?",
+  "finalRagQuery": "Comment puis-je obtenir la nationalité algérienne Est ce qu'il y a des nationalités qui sont exclues des ses dispositions (Code de la Nationalité (Ordonnance 70-86) Acquisition Naturalisation Filiation Mariage Conditions)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T17:40:23.771Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+User: "Comment puis-je obtenir la nationalité algérienne ?"
+Assistant: "La nationalité algérienne est définie par la loi, qui détermine également les conditions d'acquisition, de conservation, de perte et de déchéance [5, 6, 7].
+
+Voici les moyens d'acquérir la nationalité algérienne :
+
+*   **Par filiation** : La nationalité algérienne d'origine peut être prouvée par la filiation découlant de deux ascendants en ligne paternelle, nés en Algérie et y ayant joui du statut musulman [1].
+*   **Par mariage** : La nationalité algérienne peut s'acquérir par mariage avec un Algérien ou une Algérienne, par décret, sous certaines conditions. Il faut notamment prouver que le mariage est légal et effectivement établi depuis au moins trois ans au moment de la demande de naturalisation [1].
+*   **Par naturalisation** : Les conditions spécifiques de naturalisation ne sont pas détaillées dans les sources fournies, mais il est mentionné que la nationalité peut être acquise par naturalisation [1].
+*   **Par déclaration** : Bien que le terme "déclaration" soit mentionné dans votre question, les sources fournies ne détaillent pas les conditions d'acquisition de la nationalité algérienne par simple déclaration. Cependant, une déclaration sur l'honneur attestant que le conjoint jouit uniquement de la nationalité algérienne est requise dans certains contextes [4].
+
+Il est important de noter que l'ordonnance n° 70-86 du 15 décembre 1970 est le Code de la nationalité algérienne [1, 2]. Une personne est considérée majeure au sens de cette ordonnance si elle a atteint l'âge de 21 ans [1]."
+
+------------------------------------------
+
+[2026-02-06T17:40:26.439Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "( Nouveau ) - La <b>nationalité algérienne</b> peut s&#39;acquérir par le <b>mariage</b> ... La demande <b>est</b> adressée au ministre de la justice <b>qui</b> ... demande de <b>naturalisation</b>&nb..."
+  },
+  {
+    "rank": 2,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "Art . 95. - Tout acte de l&#39;etat civil des algériens et des étrangers , établi en pays étranger , fait foi , s&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Nouvelle Constitution 2016",
+    "link": "gs://legaldz/0000006.pdf",
+    "snippet": "27 Joumada El Oula 1437 7 mars 2016 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 14 9 Art . 29 . L&#39;Algérie se défend&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi n° 14-08 modifiant et complétant l'ordonnance n° 70-20 relative à l'état civil",
+    "link": "gs://legaldz/0000023.pdf",
+    "snippet": "24 Chaoual 1435 20 août 2014 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 49 3 9 LOIS Loi n ° 14-08 du 13 Chaoual&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Constitution de 1989",
+    "link": "gs://legaldz/0000010.pdf",
+    "snippet": "Les <b>conditions</b> d&#39;<b>acquisition</b> , de conservation , de perte et de déchéance de la <b>nationalité algérienne sont</b> déterminées par la loi . Article 30 . Les&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T17:40:37.046Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T17:40:37.046Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Est ce qu'il y a des nationalités qui sont exclues des ses dispositions? Réponse plus simple, svp ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T17:40:39.118Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Champ d'application Réciprocité Conditions Loi étrangère",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T17:40:39.120Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Champ d'application Réciprocité Conditions Loi étrangère",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T17:40:39.121Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Réponse plus simple, svp ?",
+  "finalRagQuery": "Est ce qu'il y a des nationalités qui sont exclues des ses dispositions Réponse plus simple, svp (Code de la Nationalité (Ordonnance 70-86) Champ d'application Réciprocité Conditions Loi étrangère) Algérie",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T17:40:39.122Z] === PREAMBLE SENT TO AI ===
+Tu es un assistant juridique clair et pédagogique. L'utilisateur veut une réponse SIMPLE.
+                                
+                                INSTRUCTIONS :
+                                1. Commence OBLIGATOIREMENT par : "Oui", "Non", ou "Oui, mais...".
+                                2. Sois concret : Si le montant dépasse les seuils cités, dis que c'est taxable.
+                                3. Évite le jargon. Parle de "la loi".
+                                4. Fais 2-3 phrases maximum.
+                                5. Sers-toi des textes ci-dessous ET du CONTEXTE DE LA CONVERSATION PRÉCÉDENTE pour répondre.
+                                
+                                CONTEXTE DE LA CONVERSATION:
+User: "Comment puis-je obtenir la nationalité algérienne ?"
+Assistant: "La nationalité algérienne est définie par la loi, qui détermine également les conditions d'acquisition, de conservation, de perte et de déchéance [5, 6, 7].
+
+Voici les moyens d'acquérir la nationalité algérienne :
+
+*   **Par filiation** : La nationalité algérienne d'origine peut être prouvée par la filiation découlant de deux ascendants en ligne paternelle, nés en Algérie et y ayant joui du statut musulman [1].
+*   **Par mariage** : La nationalité algérienne peut s'acquérir par mariage avec un Algérien ou une Algérienne, par décret, sous certaines conditions. Il faut notamment prouver que le mariage est légal et effectivement établi depuis au moins trois ans au moment de la demande de naturalisation [1].
+*   **Par naturalisation** : Les conditions spécifiques de naturalisation ne sont pas détaillées dans les sources fournies, mais il est mentionné que la nationalité peut être acquise par naturalisation [1].
+*   **Par déclaration** : Bien que le terme "déclaration" soit mentionné dans votre question, les sources fournies ne détaillent pas les conditions d'acquisition de la nationalité algérienne par simple déclaration. Cependant, une déclaration sur l'honneur attestant que le conjoint jouit uniquement de la nationalité algérienne est requise dans certains contextes [4].
+
+Il est important de noter que l'ordonnance n° 70-86 du 15 décembre 1970 est le Code de la nationalité algérienne [1, 2]. Une personne est considérée majeure au sens de cette ordonnance si elle a atteint l'âge de 21 ans [1]."
+User: "Est ce qu'il y a des nationalités qui sont exclues des ses dispositions?"
+Assistant: "La nationalité algérienne est définie par la loi, qui détermine également les conditions d'acquisition, de conservation, de perte et de déchéance [3, 5, 6, 7].
+
+Voici les moyens d'acquérir la nationalité algérienne :
+
+*   **Par filiation** : La nationalité algérienne d'origine peut être prouvée par la filiation découlant de deux ascendants en ligne paternelle, nés en Algérie et y ayant joui du statut musulman [1].
+*   **Par naturalisation** : Un étranger peut acquérir la nationalité algérienne par naturalisation s'il en formule la demande et remplit certaines conditions, notamment avoir résidé en Algérie pendant au moins sept ans au jour de la demande et y résider au moment de la signature du décret accordant la naturalisation [1].
+*   **Par mariage** : Les sources fournies ne détaillent pas les conditions d'acquisition de la nationalité algérienne par mariage. Cependant, il est mentionné qu'une déclaration sur l'honneur attestant que le conjoint jouit uniquement de la nationalité algérienne est requise dans certains contextes [3].
+
+Il n'est pas précisé dans les sources si certaines nationalités sont exclues des dispositions du Code de la Nationalité (Ordonnance 70-86) [1, 4]."
+
+------------------------------------------
+
+[2026-02-06T17:40:40.082Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "Art . 22. ( Modifié ) - En cas de pluralité de <b>nationalités</b> , le juge applique la <b>nationalité</b> effective . Toutefois , la <b>loi algérienne</b>&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "Art . 95. - Tout acte de l&#39;etat civil des <b>algériens</b> et des étrangers , établi en pays <b>étranger</b> , fait foi , s&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Ordonnance n° 66-155 portant code de procédure pénale modifiée et complétée",
+    "link": "gs://legaldz/0000042.pdf",
+    "snippet": "... législation du pays où il a été commis , peut être poursuivi et jugé en <b>Algérie</b> , lorsque son auteur <b>est</b> un <b>algérien</b> . La poursuite ou le jugement ne peut&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Nouvelle Constitution 2016",
+    "link": "gs://legaldz/0000006.pdf",
+    "snippet": "27 Joumada El Oula 1437 7 mars 2016 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 14 9 Art . 29 . L&#39;<b>Algérie</b> se défend&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Loi n° 08-04 portant loi d'orientation sur l'éducation nationale",
+    "link": "gs://legaldz/0000046.pdf",
+    "snippet": "6 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 04 Sous &lt;&lt;&lt; Art . 73 . réserve de se conformer obligatoirement aux règles et procédures&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T18:03:55.499Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:03:55.501Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:03:56.804Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:03:56.806Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:07:08.147Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:07:08.152Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:08:24.227Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:08:24.228Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:08:25.560Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:08:25.561Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:09:28.980Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:09:28.983Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:09:30.313Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:09:30.314Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:16:58.376Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:16:58.378Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:16:59.866Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Résidence",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T18:16:59.868Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Résidence",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T18:16:59.869Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Comment puis-je obtenir la nationalité algérienne ?",
+  "finalRagQuery": "Comment puis-je obtenir la nationalité algérienne (Code de la Nationalité (Ordonnance 70-86) Acquisition Naturalisation Filiation Mariage Résidence)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T18:16:59.869Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+
+------------------------------------------
+
+[2026-02-06T18:17:03.186Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "( 3 ) <b>Naturalisation</b> Art . 10. - L&#39;étranger qui en formule la demande , peut acquérir la <b>nationalité algérienne</b> , à condition : 1º d&#39;avoir sa <b>résidence</b> en&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Loi n° 14-08 modifiant et complétant l'ordonnance n° 70-20 relative à l'état civil",
+    "link": "gs://legaldz/0000023.pdf",
+    "snippet": "24 Chaoual 1435 20 août 2014 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 49 3 9 LOIS Loi n ° 14-08 du 13 Chaoual&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "... <b>mariage</b> . Il en sera de même du <b>mariage</b> contracté en pays étranger entre un <b>algérien</b> et une étrangère , s&#39;il a été célébré par les agents diplomatiques&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi n° 89-28 relative aux réunions et manifestations publiques",
+    "link": "gs://legaldz/0000028.pdf",
+    "snippet": "34 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 17 26 Rajab 1442 10 mars 2021 8 - Un certificat médical délivré à l&#39;intéressé par&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Nouvelle Constitution 2016",
+    "link": "gs://legaldz/0000006.pdf",
+    "snippet": "16 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 14 27 Joumada El Oula 1437 7 mars 2016 TITRE DEUXIEME DE L&#39;ORGANISATION DES POUVOIRS Chapitre&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T18:25:21.772Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:25:21.775Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:25:23.115Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Mariage Filiation Résidence",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T18:25:23.116Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Mariage Filiation Résidence",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T18:25:23.117Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Comment puis-je obtenir la nationalité algérienne ?",
+  "finalRagQuery": "Comment puis-je obtenir la nationalité algérienne (Code de la Nationalité (Ordonnance 70-86) Acquisition Naturalisation Mariage Filiation Résidence)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T18:25:23.120Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+
+------------------------------------------
+
+[2026-02-06T18:25:26.113Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "( 3 ) <b>Naturalisation</b> Art . 10. - L&#39;étranger qui en formule la demande , peut acquérir la <b>nationalité algérienne</b> , à condition : 1º d&#39;avoir sa <b>résidence</b> en&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Loi n° 14-08 modifiant et complétant l'ordonnance n° 70-20 relative à l'état civil",
+    "link": "gs://legaldz/0000023.pdf",
+    "snippet": "24 Chaoual 1435 20 août 2014 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 49 3 9 LOIS Loi n ° 14-08 du 13 Chaoual&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "... <b>mariage</b> . Il en sera de même du <b>mariage</b> contracté en pays étranger entre un <b>algérien</b> et une étrangère , s&#39;il a été célébré par les agents diplomatiques&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi n° 89-28 relative aux réunions et manifestations publiques",
+    "link": "gs://legaldz/0000028.pdf",
+    "snippet": "34 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 17 26 Rajab 1442 10 mars 2021 8 - Un certificat médical délivré à l&#39;intéressé par&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Projet de Révision de la Constitution-mai 2020",
+    "link": "gs://legaldz/0000005.pdf",
+    "snippet": "... avoir acquis une <b>nationalité</b> étrangère ; jouir uniquement de la <b>nationalité algérienne</b> d&#39;origine et attester de la <b>nationalité algérienne</b> d&#39;origine du père&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T18:25:30.327Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:25:30.328Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment puis-je obtenir la nationalité algérienne ? ce qu'il y a des nationalités qui sont exclues des ses dispositions?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:25:31.753Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Exclusion",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T18:25:31.755Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Acquisition Naturalisation Filiation Mariage Exclusion",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T18:25:31.758Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "ce qu'il y a des nationalités qui sont exclues des ses dispositions?",
+  "finalRagQuery": "Comment puis-je obtenir la nationalité algérienne ce qu'il y a des nationalités qui sont exclues des ses dispositions (Code de la Nationalité (Ordonnance 70-86) Acquisition Naturalisation Filiation Mariage Exclusion)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T18:25:31.759Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+User: "Comment puis-je obtenir la nationalité algérienne ?"
+Assistant: "La nationalité algérienne est définie par la loi [5, 6, 7, 8]. Les conditions d'acquisition, de conservation, de perte et de déchéance de la nationalité algérienne sont déterminées par la loi [5, 9].
+
+Voici les différentes manières d'acquérir la nationalité algérienne :
+
+*   **Par mariage** : La nationalité algérienne peut s'acquérir par mariage avec un Algérien ou une Algérienne, par décret, sous certaines conditions. Il faut prouver que le mariage est légal et effectivement établi depuis au moins trois ans au moment de la demande de naturalisation [1].
+*   **Par filiation** : Lorsque la nationalité algérienne est revendiquée à titre de nationalité d'origine, elle peut être prouvée par la filiation découlant de deux ascendants en ligne paternelle, nés en Algérie et y ayant joui du statut musulman [1].
+*   **Par résidence** : Pour certaines fonctions ou candidatures, une résidence exclusive et permanente en Algérie est requise. Par exemple, pour être électeur, il faut être Algérien et avoir 18 ans révolus [4]. Pour certaines hautes responsabilités de l'État, une résidence permanente exclusive en Algérie d'au moins dix ans précédant le dépôt de la candidature est nécessaire [5, 6].
+
+L'ordonnance n° 70-86 du 15 décembre 1970, modifiée et complétée, porte le code de la nationalité algérienne [2]."
+
+------------------------------------------
+
+[2026-02-06T18:25:35.156Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "( 3 ) <b>Naturalisation</b> Art . 10. - L&#39;étranger <b>qui</b> en formule la demande , peut acquérir la <b>nationalité algérienne</b> , à condition : 1º d&#39;avoir sa résidence en&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "Art . 95. - Tout acte de l&#39;etat civil des algériens et des étrangers , établi en pays étranger , fait foi , s&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Loi n° 14-08 modifiant et complétant l'ordonnance n° 70-20 relative à l'état civil",
+    "link": "gs://legaldz/0000023.pdf",
+    "snippet": "24 Chaoual 1435 20 août 2014 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 49 3 9 LOIS Loi n ° 14-08 du 13 Chaoual&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi n° 84-11 portant code de la famille modifiée et complétée",
+    "link": "gs://legaldz/0000044.pdf",
+    "snippet": "Chapitre II Des empêchements au <b>mariage</b> Art . 23. Les deux conjoints doivent être exempts des empêchements absolus ou temporaires au <b>mariage</b> légal . Art ...."
+  },
+  {
+    "rank": 5,
+    "title": "Nouvelle Constitution 2016",
+    "link": "gs://legaldz/0000006.pdf",
+    "snippet": "27 Joumada El Oula 1437 7 mars 2016 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 14 9 Art . 29 . L&#39;Algérie se défend&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-06T18:25:38.326Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-06T18:25:38.327Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "ce qu'il y a des nationalités qui sont exclues des ses dispositions? Réponse plus simple, svp ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-06T18:25:40.635Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Restriction Naturalisation Dispositions légales Acquisition Nationalité algérienne",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T18:25:40.637Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de la Nationalité (Ordonnance 70-86)",
+  "keywords": "Restriction Naturalisation Dispositions légales Acquisition Nationalité algérienne",
+  "intent": "Nationality"
+}
+------------------------------------------
+
+[2026-02-06T18:25:40.642Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Réponse plus simple, svp ?",
+  "finalRagQuery": "ce qu'il y a des nationalités qui sont exclues des ses dispositions Réponse plus simple, svp (Code de la Nationalité (Ordonnance 70-86) Restriction Naturalisation Dispositions légales Acquisition Nationalité algérienne)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-06T18:25:40.643Z] === PREAMBLE SENT TO AI ===
+Tu es un assistant juridique clair et pédagogique. L'utilisateur veut une réponse SIMPLE.
+                                
+                                INSTRUCTIONS :
+                                1. Commence OBLIGATOIREMENT par : "Oui", "Non", ou "Oui, mais...".
+                                2. Sois concret : Si le montant dépasse les seuils cités, dis que c'est taxable.
+                                3. Évite le jargon. Parle de "la loi".
+                                4. Fais 2-3 phrases maximum.
+                                5. Sers-toi des textes ci-dessous ET du CONTEXTE DE LA CONVERSATION PRÉCÉDENTE pour répondre.
+                                
+                                CONTEXTE DE LA CONVERSATION:
+User: "Comment puis-je obtenir la nationalité algérienne ?"
+Assistant: "La nationalité algérienne est définie par la loi [5, 6, 7, 8]. Les conditions d'acquisition, de conservation, de perte et de déchéance de la nationalité algérienne sont déterminées par la loi [5, 9].
+
+Voici les différentes manières d'acquérir la nationalité algérienne :
+
+*   **Par mariage** : La nationalité algérienne peut s'acquérir par mariage avec un Algérien ou une Algérienne, par décret, sous certaines conditions. Il faut prouver que le mariage est légal et effectivement établi depuis au moins trois ans au moment de la demande de naturalisation [1].
+*   **Par filiation** : Lorsque la nationalité algérienne est revendiquée à titre de nationalité d'origine, elle peut être prouvée par la filiation découlant de deux ascendants en ligne paternelle, nés en Algérie et y ayant joui du statut musulman [1].
+*   **Par résidence** : Pour certaines fonctions ou candidatures, une résidence exclusive et permanente en Algérie est requise. Par exemple, pour être électeur, il faut être Algérien et avoir 18 ans révolus [4]. Pour certaines hautes responsabilités de l'État, une résidence permanente exclusive en Algérie d'au moins dix ans précédant le dépôt de la candidature est nécessaire [5, 6].
+
+L'ordonnance n° 70-86 du 15 décembre 1970, modifiée et complétée, porte le code de la nationalité algérienne [2]."
+User: "ce qu'il y a des nationalités qui sont exclues des ses dispositions?"
+Assistant: "Pour obtenir la nationalité algérienne, plusieurs voies sont possibles :
+
+*   **Par naturalisation** : Un étranger peut acquérir la nationalité algérienne s'il en fait la demande et remplit certaines conditions. Il doit notamment avoir résidé en Algérie pendant au moins sept ans au moment de la demande et y résider au moment de la signature du décret de naturalisation [1].
+*   **Par filiation** : La nationalité algérienne d'origine peut être prouvée par la filiation découlant de deux ascendants en ligne paternelle, nés en Algérie et ayant joui du statut musulman [1]. Les enfants mineurs non mariés d'une personne réintégrée dans la nationalité algérienne, s'ils vivent avec elle, recouvrent ou acquièrent de plein droit la nationalité algérienne. L'acte de naturalisation peut également accorder la nationalité algérienne aux enfants mineurs de l'étranger naturalisé [1].
+*   **Par mariage** : Bien que non détaillé dans les sources fournies pour cette question, la nationalité algérienne peut s'acquérir par mariage avec un Algérien ou une Algérienne, par décret, sous certaines conditions, notamment un mariage légal et établi depuis au moins trois ans au moment de la demande de naturalisation [1].
+
+Concernant les nationalités exclues, les sources fournies ne mentionnent pas explicitement de nationalités spécifiques qui seraient exclues des dispositions du Code de la Nationalité. Cependant, pour certaines hautes responsabilités de l'État et fonctions politiques, la nationalité algérienne exclusive est requise [4]. De plus, pour être éligible à la présidence de la République, il faut attester de la nationalité algérienne d'origine unique du conjoint [4, 5]."
+
+------------------------------------------
+
+[2026-02-06T18:25:42.105Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "( 3 ) <b>Naturalisation</b> Art . 10. - L&#39;étranger <b>qui</b> en formule la demande , peut acquérir la <b>nationalité algérienne</b> , à condition : 1º d&#39;avoir sa résidence en&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Loi organique n° 12-05 relative à l’information",
+    "link": "gs://legaldz/0000065.pdf",
+    "snippet": "... <b>dispositions</b> de la Constitution en reprenant ... <b>qui</b> lui est soumis ; <b>qu&#39;il</b> ne ... conditions suivantes : être de <b>nationalité algérienne</b> d&#39;origine ; ....."
+  },
+  {
+    "rank": 3,
+    "title": "Loi n° 14-08 modifiant et complétant l'ordonnance n° 70-20 relative à l'état civil",
+    "link": "gs://legaldz/0000023.pdf",
+    "snippet": "24 Chaoual 1435 20 août 2014 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 49 3 9 LOIS Loi n ° 14-08 du 13 Chaoual&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Nouvelle Constitution 2016",
+    "link": "gs://legaldz/0000006.pdf",
+    "snippet": "27 Joumada El Oula 1437 7 mars 2016 JOURNAL OFFICIEL DE LA REPUBLIQUE <b>ALGERIENNE</b> N ° 14 9 Art . 29 . L&#39;<b>Algérie</b> se défend&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Ordonnance n° 70-20 portant code de l’état civil",
+    "link": "gs://legaldz/0000039.pdf",
+    "snippet": "Art . 95. - Tout acte de l&#39;etat civil des algériens et des étrangers , établi en pays étranger , fait foi , s&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-21T14:39:02.297Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-21T14:39:02.299Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Quelles sont les conditions requises pour importer un véhicule en Algérie ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-21T14:39:06.958Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code des Douanes (Loi 79-07) et Lois de Finances",
+  "keywords": "Importation Véhicules Dédouanement Moins de 3 ans Homologation",
+  "intent": "Customs"
+}
+------------------------------------------
+
+[2026-02-21T14:39:06.958Z] === INTENT RESULT ===
+{
+  "targetCode": "Code des Douanes (Loi 79-07) et Lois de Finances",
+  "keywords": "Importation Véhicules Dédouanement Moins de 3 ans Homologation",
+  "intent": "Customs"
+}
+------------------------------------------
+
+[2026-02-21T14:39:06.959Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Quelles sont les conditions requises pour importer un véhicule en Algérie ?",
+  "finalRagQuery": "Quelles sont les conditions requises pour importer un véhicule en Algérie (Code des Douanes (Loi 79-07) et Lois de Finances Importation Véhicules Dédouanement Moins de 3 ans Homologation)",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-21T14:39:06.960Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+
+------------------------------------------
+
+[2026-02-21T14:39:11.137Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Loi de Finances pour 2024",
+    "link": "gs://legaldz/0000138.pdf",
+    "snippet": "38 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 86 18 Joumada Ethania 1445 31 décembre 2023 &lt;&lt; Art . 120 . Les revenus provenant par&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Loi de finances 2020",
+    "link": "gs://legaldz/0000145.pdf",
+    "snippet": "38 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 81 <b>3</b> Joumada El Oula 1441 30 décembre 2019 Le ministre chargé des <b>finances</b> présente un exposé ,&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Loi de Finances pour 2026",
+    "link": "gs://legaldz/0000168.pdf",
+    "snippet": "66 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 88 11 Rajab 1447 31 décembre 2025 Art . 125 . Les dispositions de la <b>loi</b> n °&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi de finance 2021",
+    "link": "gs://legaldz/0000144.pdf",
+    "snippet": "42 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 83 16 Joumada El Oula 1442 31 décembre 2020 Art . 105 . Les dispositions de l&#39;&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Loi de finance 2022",
+    "link": "gs://legaldz/0000142.pdf",
+    "snippet": "44 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 100 25 Joumada El Oula 1443 30 décembre 2021 de lutter contre la contrebande ; de lutter contre&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-24T14:44:57.964Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-24T14:44:57.966Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Comment creer un Sarl?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-24T14:45:01.041Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de Commerce (Ordonnance 75-59)",
+  "keywords": "SARL Statuts Registre du commerce Capital social Notaire",
+  "intent": "Commercial"
+}
+------------------------------------------
+
+[2026-02-24T14:45:01.048Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de Commerce (Ordonnance 75-59)",
+  "keywords": "SARL Statuts Registre du commerce Capital social Notaire",
+  "intent": "Commercial"
+}
+------------------------------------------
+
+[2026-02-24T14:45:01.051Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Comment creer un Sarl?",
+  "finalRagQuery": "Comment creer un Sarl (Code de Commerce (Ordonnance 75-59) SARL Statuts Registre du commerce Capital social Notaire) Algérie",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-24T14:45:01.053Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+
+------------------------------------------
+
+[2026-02-24T14:45:03.830Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-59 portant code de commerce modifiée et complétée",
+    "link": "gs://legaldz/0000040.pdf",
+    "snippet": "Art . 565. - Tous les associés doivent intervenir à l&#39;acte constitutif de la société en personne ou par mandataires justifiant d&#39;un&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Loi de finances 2016",
+    "link": "gs://legaldz/0000149.pdf",
+    "snippet": "26 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 72 19 Rabie El Aouel 1437 31 décembre 2015 Art . 65 . Les dispositions de l&#39;&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Ordonnance n° 03-11 relative à la monnaie et au crédit",
+    "link": "gs://legaldz/0000052.pdf",
+    "snippet": "12 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 52 Art . 81 . Il est interdit à toute entreprise autre qu&#39;une banque ou un&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Ordonnance n° 10-04 modifiant la l'ordonnance n° 03-11 relative à la monnaie et au crédit",
+    "link": "gs://legaldz/0000051.pdf",
+    "snippet": "... <b>capital</b> . Par actionnariat national , il peut ... mettre en œuvre . ... <b>statuts</b> de la société de droit <b>algérien</b> ou ceux de la société étrangère , ainsi que l&#39;&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Textes d'application de la loi relative à l'investissement 22-18",
+    "link": "gs://legaldz/0000002.pdf",
+    "snippet": "21 Safar 1444 18 septembre 2022 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 60 Art . 8. - L&#39;enregistrement des investissements entrant dans&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-24T14:49:08.157Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-24T14:49:08.158Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Est ce qu'il y a un nombre un nombre minimal de parts sociales pour le capitale de la Sarl?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-24T14:49:11.501Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de Commerce (Ordonnance 75-59)",
+  "keywords": "SARL Capital social Parts sociales Valeur nominale",
+  "intent": "Commercial Law"
+}
+------------------------------------------
+
+[2026-02-24T14:49:11.503Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de Commerce (Ordonnance 75-59)",
+  "keywords": "SARL Capital social Parts sociales Valeur nominale",
+  "intent": "Commercial Law"
+}
+------------------------------------------
+
+[2026-02-24T14:49:11.509Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Est ce qu'il y a un nombre un nombre minimal de parts sociales pour le capitale de la Sarl?",
+  "finalRagQuery": "Est ce qu'il y a un nombre un nombre minimal de parts sociales pour le capitale de la Sarl (Code de Commerce (Ordonnance 75-59) SARL Capital social Parts sociales Valeur nominale) Algérie",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-24T14:49:11.511Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+User: "Comment creer un Sarl?"
+Assistant: "Pour créer une SARL en Algérie, tous les associés doivent intervenir à l'acte constitutif de la société, soit en personne, soit par des mandataires munis d'un pouvoir spécial [1].
+
+Le capital social d'une SARL ne peut être inférieur à 100 000 DA et est divisé en parts sociales d'une valeur nominale d'au moins 1 000 DA [1]. Toute modification de l'immatriculation au registre du commerce nécessite au préalable la mise en conformité de la société avec les règles de répartition du capital [2].
+
+Les requérants doivent remettre la liste des principaux dirigeants et le projet de statuts de la société de droit algérien [3, 4]. La déclaration notariée constatant les souscriptions et les versements doit être sincère et véritable, sous peine de sanctions pénales [1].
+
+Le Code de commerce (Ordonnance n° 75-59) régit le caractère commercial d'une société, qui est déterminé par sa forme ou son objet [1, 5, 6]."
+
+------------------------------------------
+
+[2026-02-24T14:49:13.449Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-59 portant code de commerce modifiée et complétée",
+    "link": "gs://legaldz/0000040.pdf",
+    "snippet": "– Le <b>capital social</b> de la <b>S.A.R.L</b> ne peut être inférieur à 100.000 DA ; il <b>est</b> divisé en <b>parts sociales</b> d&#39;égale <b>valeur nominale</b> de 1.000 DA au moins . Sa&nbsp;....."
+  },
+  {
+    "rank": 2,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "... société , par suite du travail <b>qu&#39;il</b> a fourni comme apport . ... <b>part est</b> fixée en proportion de sa mise dans le fonds <b>social</b> . ... <b>pour</b> les pertes ; et&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Loi de finances 2016",
+    "link": "gs://legaldz/0000149.pdf",
+    "snippet": "26 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 72 19 Rabie El Aouel 1437 31 décembre 2015 Art . 65 . Les dispositions de l&#39;&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi de finance 2021",
+    "link": "gs://legaldz/0000144.pdf",
+    "snippet": "10 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 83 16 Joumada El Oula 1442 31 décembre 2020 Toutefois , ne sont pas comprises dans la base&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Ordonnance n° 03-11 relative à la monnaie et au crédit",
+    "link": "gs://legaldz/0000052.pdf",
+    "snippet": "12 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 52 Art . 81 . Il <b>est</b> interdit à toute entreprise autre qu&#39;une banque ou un&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-02-24T14:51:32.819Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-02-24T14:51:32.819Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "Est ce qu'il y a un nombre un nombre minimal de parts sociales pour le capitale de la Sarl? Les dirigeants de la Sarl devraient-ils détenir plus d'actions que les autres associés ?",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-02-24T14:51:35.854Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de Commerce (Ordonnance 75-59)",
+  "keywords": "SARL Capital social Parts sociales Gérance Associés",
+  "intent": "Commercial Law"
+}
+------------------------------------------
+
+[2026-02-24T14:51:35.855Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de Commerce (Ordonnance 75-59)",
+  "keywords": "SARL Capital social Parts sociales Gérance Associés",
+  "intent": "Commercial Law"
+}
+------------------------------------------
+
+[2026-02-24T14:51:35.857Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "Les dirigeants de la Sarl devraient-ils détenir plus d'actions que les autres associés ?",
+  "finalRagQuery": "Est ce qu'il y a un nombre un nombre minimal de parts sociales pour le capitale de la Sarl Les dirigeants de la Sarl devraient-ils détenir plus d'actions que les autres associés (Code de Commerce (Ordonnance 75-59) SARL Capital social Parts sociales Gérance Associés) Algérie",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-02-24T14:51:35.858Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+User: "Comment creer un Sarl?"
+Assistant: "Pour créer une SARL en Algérie, tous les associés doivent intervenir à l'acte constitutif de la société, soit en personne, soit par des mandataires munis d'un pouvoir spécial [1].
+
+Le capital social d'une SARL ne peut être inférieur à 100 000 DA et est divisé en parts sociales d'une valeur nominale d'au moins 1 000 DA [1]. Toute modification de l'immatriculation au registre du commerce nécessite au préalable la mise en conformité de la société avec les règles de répartition du capital [2].
+
+Les requérants doivent remettre la liste des principaux dirigeants et le projet de statuts de la société de droit algérien [3, 4]. La déclaration notariée constatant les souscriptions et les versements doit être sincère et véritable, sous peine de sanctions pénales [1].
+
+Le Code de commerce (Ordonnance n° 75-59) régit le caractère commercial d'une société, qui est déterminé par sa forme ou son objet [1, 5, 6]."
+User: "Est ce qu'il y a un nombre un nombre minimal de parts sociales pour le capitale de la Sarl?"
+Assistant: "Le capital social d'une SARL ne peut être inférieur à 100 000 DA et est divisé en parts sociales d'une valeur nominale d'au moins 1 000 DA [1]."
+
+------------------------------------------
+
+[2026-02-24T14:51:38.305Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-59 portant code de commerce modifiée et complétée",
+    "link": "gs://legaldz/0000040.pdf",
+    "snippet": "– Le <b>capital social</b> de la <b>S.A.R.L</b> ne peut être inférieur à 100.000 DA ; il <b>est</b> divisé en <b>parts sociales</b> d&#39;égale valeur nominale de 1.000 DA au moins . Sa&nbsp;......"
+  },
+  {
+    "rank": 2,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "Section I DES ELEMENTS DE LA SOCIETE Art . 418. Le contrat de société doit être constaté par acte authentique à peine de nullité . Sont&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Loi de Finances pour 2026",
+    "link": "gs://legaldz/0000168.pdf",
+    "snippet": "Toute cession <b>d&#39;actions</b> ou de <b>parts sociales</b> détenues dans le <b>capital social</b> d&#39;une société de droit algérien , exerçant dans l&#39;un des secteurs stratégiques&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Journal officiel n° 88 du 31 Décembre 2025",
+    "link": "gs://legaldz/0000172.pdf",
+    "snippet": "Toute cession <b>d&#39;actions</b> ou de <b>parts sociales</b> détenues dans le <b>capital social</b> d&#39;une société de droit algérien , exerçant dans l&#39;un des secteurs stratégiques&nbsp;......"
+  },
+  {
+    "rank": 5,
+    "title": "Loi de finances 2016",
+    "link": "gs://legaldz/0000149.pdf",
+    "snippet": "L&#39;exercice des activités de production de biens , de services et d&#39;importation par les étrangers <b>est</b> subordonné à la constitution d&#39;une société dont le <b>capital</b>&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-03-03T16:57:17.582Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-03-03T16:57:17.583Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "📜 Statuts SARL",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-03-03T16:57:21.890Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Code de Commerce (Ordonnance 75-59)",
+  "keywords": "Statuts SARL Capital social Gérance Associés",
+  "intent": "Commercial Law"
+}
+------------------------------------------
+
+[2026-03-03T16:57:21.893Z] === INTENT RESULT ===
+{
+  "targetCode": "Code de Commerce (Ordonnance 75-59)",
+  "keywords": "Statuts SARL Capital social Gérance Associés",
+  "intent": "Commercial Law"
+}
+------------------------------------------
+
+[2026-03-03T16:57:21.895Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "📜 Statuts SARL",
+  "finalRagQuery": "📜 Statuts SARL (Code de Commerce (Ordonnance 75-59) Statuts SARL Capital social Gérance Associés) Algérie",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-03-03T16:57:21.896Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+
+------------------------------------------
+
+[2026-03-03T16:57:25.939Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Ordonnance n° 75-59 portant code de commerce modifiée et complétée",
+    "link": "gs://legaldz/0000040.pdf",
+    "snippet": "– Le <b>capital social</b> de la <b>S.A.R.L</b> ne peut être ... <b>associés</b> et intégralement ... <b>gérant</b> de la société après son inscription au registre du <b>commerce</b> ...."
+  },
+  {
+    "rank": 2,
+    "title": "Ordonnance n° 75-58 portant code civil modifiée et complétée",
+    "link": "gs://legaldz/0000041.pdf",
+    "snippet": "Section I DES ELEMENTS DE LA SOCIETE Art . 418. Le contrat de société doit être constaté par acte authentique à peine de nullité . Sont&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Ordonnance n° 10-04 modifiant la l'ordonnance n° 03-11 relative à la monnaie et au crédit",
+    "link": "gs://legaldz/0000051.pdf",
+    "snippet": "... <b>statuts</b> de la société de droit algérien ou ceux de la société étrangère , ainsi que l&#39;organisation interne . Ils attestent de l&#39;honorabilité et de la&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Loi de finances 2016",
+    "link": "gs://legaldz/0000149.pdf",
+    "snippet": "... société aux règles de répartition du <b>capital</b> sus - énoncées . ... <b>code</b> de <b>commerce</b> et ce , sans que ... société ; le changement d&#39;adresse du siège <b>social</b> ...."
+  },
+  {
+    "rank": 5,
+    "title": "Ordonnance n° 03-11 relative à la monnaie et au crédit",
+    "link": "gs://legaldz/0000052.pdf",
+    "snippet": "12 JOURNAL OFFICIEL DE LA REPUBLIQUE ALGERIENNE N ° 52 Art . 81 . Il est interdit à toute entreprise autre qu&#39;une banque ou un&nbsp;......"
+  }
+]
+------------------------------------------
+
+[2026-03-03T16:59:48.546Z] === INTENT ANALYSIS ===
+analyzing...
+------------------------------------------
+
+[2026-03-03T16:59:48.546Z] === INTENT REQUEST (API-KEY) ===
+{
+  "model": "gemini-flash-latest",
+  "query": "⚖️ Droit du Travail",
+  "isArabic": false
+}
+------------------------------------------
+
+[2026-03-03T16:59:51.683Z] === INTENT SERVICE SUCCESS ===
+{
+  "targetCode": "Loi 90-11 relative aux relations de travail",
+  "keywords": "Contrat de travail Licenciement Salaire Congés Règlement intérieur",
+  "intent": "Labor Law"
+}
+------------------------------------------
+
+[2026-03-03T16:59:51.685Z] === INTENT RESULT ===
+{
+  "targetCode": "Loi 90-11 relative aux relations de travail",
+  "keywords": "Contrat de travail Licenciement Salaire Congés Règlement intérieur",
+  "intent": "Labor Law"
+}
+------------------------------------------
+
+[2026-03-03T16:59:51.688Z] === RAG SEARCH QUERY ===
+{
+  "originalQuery": "⚖️ Droit du Travail",
+  "finalRagQuery": "⚖️ Droit du Travail (Loi 90-11 relative aux relations de travail Contrat de travail Licenciement Salaire Congés Règlement intérieur) Algérie",
+  "isArabic": false,
+  "mode": "chat"
+}
+------------------------------------------
+
+[2026-03-03T16:59:51.688Z] === PREAMBLE SENT TO AI ===
+Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    CONTEXTE DE LA CONVERSATION:
+Assistant: "Bonjour. Je suis votre assistant juridique intelligent. Comment puis-je vous aider aujourd'hui ?"
+
+------------------------------------------
+
+[2026-03-03T16:59:55.978Z] === TOP 5 RAG RESULTS FROM GOOGLE ===
+[
+  {
+    "rank": 1,
+    "title": "Loi N° 90-11 relative aux relations de travail",
+    "link": "gs://legaldz/0000063.pdf",
+    "snippet": "... travailleur recruté pour une durée indéterminée a <b>droit</b> à une indemnité de <b>licenciement</b> . ... <b>droit</b> au <b>congé</b> annuel rémunéré . ... Le <b>règlement intérieur</b> détermi..."
+  },
+  {
+    "rank": 2,
+    "title": "Loi de finance rectificative pour 2023",
+    "link": "gs://legaldz/0000139.pdf",
+    "snippet": "... <b>relative</b> à l&#39;information ; Vu l&#39;ordonnance n ° 75 ... <b>travail</b> et aux maladies professionnelles ; Vu la ... <b>règlement</b> des conflits individuels de&nbsp;......"
+  },
+  {
+    "rank": 3,
+    "title": "Loi de finances complémentaire pour 2015",
+    "link": "gs://legaldz/0000150.pdf",
+    "snippet": "Sans préjudice des autres dispositions de la législation en vigueur , tout employeur qui rémunère un travailleur à un <b>salaire</b> inférieur au <b>salaire</b> national&nbsp;......"
+  },
+  {
+    "rank": 4,
+    "title": "Ordonnance n°06-03 portant statut général de la fonction publique",
+    "link": "gs://legaldz/0000047.pdf",
+    "snippet": "... <b>loi</b> n ° 78-12 du 5 août 1978 <b>relative</b> au statut ... <b>travail</b> et aux maladies professionnelles ; Vu la ... <b>droit</b> de grève ; Vu la <b>loi</b> n ° <b>90-11</b> du 21&nbsp;...."
+  },
+  {
+    "rank": 5,
+    "title": "Loi n° 83-11 relative aux assurances sociales",
+    "link": "gs://legaldz/0000064.pdf",
+    "snippet": "Art . 88. Les dispositions concernant les militaires et assimilés , et <b>relatives</b> aux accidents du <b>travail</b> et aux maladies professionnelles , s&#39;inspireront de la&nbsp;......"
+  }
+]
+------------------------------------------

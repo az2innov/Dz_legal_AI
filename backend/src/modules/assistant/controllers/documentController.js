@@ -39,6 +39,9 @@ const uploadAndAnalyze = async (req, res) => {
         // Sauvegarde BDD (On stocke le chemin final 'storage/...')
         const savedDoc = await documentService.saveDocument(userId, req.file, analysisResult);
 
+        // SECURITY FIX: Empêcher le cache
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+
         res.json({
             status: 'success',
             data: savedDoc
@@ -60,9 +63,11 @@ const uploadAndAnalyze = async (req, res) => {
     }
 };
 
-// 2. Lister les documents
 const listDocuments = async (req, res) => {
     try {
+        // SECURITY FIX: Empêcher le cache NGINX/Browser pour éviter les fuites entre utilisateurs
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+
         const docs = await documentService.getUserDocuments(req.user.id);
         res.json({ status: 'success', data: docs });
     } catch (error) {
@@ -79,6 +84,9 @@ const getDocument = async (req, res) => {
         const conversationHistory = await documentConversation.getConversationHistory(req.params.id, req.user.id);
         doc.conversation_history = conversationHistory;
         // ============================================================
+
+        // SECURITY FIX: Empêcher le cache
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
 
         res.json({ status: 'success', data: doc });
     } catch (error) {
@@ -129,6 +137,9 @@ const askDocument = async (req, res) => {
             // On continue même si la sauvegarde échoue, pour ne pas bloquer l'utilisateur
         }
         // =============================================================================
+
+        // SECURITY FIX: Empêcher le cache
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
 
         res.json({ status: 'success', data: { answer } });
 

@@ -11,6 +11,25 @@ const ask = async (req, res) => {
 
         if (!query) return res.status(400).json({ error: "Question requise." });
 
+        // --- SPECIAL GUEST MODE ---
+        if (req.user.role === 'guest') {
+            console.log(`[Guest] Question de ${userId}: ${query}`);
+
+            // 1. Appel AI direct (Pas de persistence BDD)
+            // Force le mode "assistant" (standard) pour les invités -> pas d'expert
+            const result = await ragService.askAssistant(query, history, 'assistant');
+
+            return res.json({
+                status: 'success',
+                data: {
+                    ...result,
+                    sessionId: 'guest_session', // Dummy ID
+                    isNewSession: false
+                }
+            });
+        }
+        // --------------------------
+
         // A. Si pas de session ID, on crée une nouvelle session
         let isNewSession = false;
         if (!sessionId) {
@@ -24,10 +43,27 @@ const ask = async (req, res) => {
         // B. Sauvegarde du message Utilisateur
         await chatService.saveMessage(sessionId, 'user', query);
 
-        // C. Appel à l'IA (Google)
-        // On passe 'history', 'query' et le 'mode' sélectionné
+        // C. Récupération de l'historique pour le RAG (Contexte)
+        let contextHistory = history; // Pour les invites, ca vient du body
+
+        // Pour les utilisateurs connectés, on préfère la source de vérité BDD
+        if (req.user.role !== 'guest' && sessionId) {
+            try {
+                const dbMessages = await chatService.getSessionMessages(sessionId, userId);
+                // On prend les 6 derniers messages pour le contexte
+                contextHistory = dbMessages.slice(-6).map(m => ({
+                    role: m.role,
+                    content: m.content
+                }));
+            } catch (e) {
+                console.warn("Impossible de récupérer l'historique BDD pour le contexte RAG:", e.message);
+            }
+        }
+
+        // D. Appel à l'IA (Google)
+        // On passe 'contextHistory', 'query' et le 'mode' sélectionné
         const mode = req.body.mode || 'expert';
-        const result = await ragService.askAssistant(query, history, mode);
+        const result = await ragService.askAssistant(query, contextHistory, mode);
 
         // D. Sauvegarde de la réponse IA
         await chatService.saveMessage(sessionId, 'assistant', result.answer, result.sources);

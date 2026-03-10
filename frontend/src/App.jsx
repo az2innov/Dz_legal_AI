@@ -8,6 +8,19 @@ import MainLayout from './layouts/MainLayout';
 import PublicLayout from './layouts/PublicLayout';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import billingService from './services/billingService';
+import { useLocation } from 'react-router-dom';
+import { logPageView } from './services/analyticsService';
+
+// --- COMPOSANT DE TRACKING DES PAGES ---
+const PageTracker = () => {
+    const location = useLocation();
+
+    useEffect(() => {
+        logPageView(location.pathname + location.search);
+    }, [location]);
+
+    return null;
+};
 
 // Components
 import Footer from './components/Footer';
@@ -274,12 +287,43 @@ const DashboardContent = () => {
     );
 };
 
+// --- 5. ROUTE INTELLIGENTE POUR CHAT (Guest vs User) ---
+const ChatRoute = () => {
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg">
+                <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+            </div>
+        );
+    }
+
+    // Si connecté : Layout Complet
+    if (user) {
+        return (
+            <MainLayout>
+                <ChatPage />
+            </MainLayout>
+        );
+    }
+
+    // Si invité : Layout Public (Simplifié dans ChatPage via prop isGuest)
+    return (
+        <PublicLayout>
+            <ChatPage isGuest={true} />
+        </PublicLayout>
+    );
+};
+
 // --- 4. APPLICATION PRINCIPALE ---
 function App() {
     return (
         <AuthProvider>
             <Router>
+                <PageTracker />
                 <Routes>
+
                     {/* --- ROUTES PUBLIQUES --- */}
                     <Route path="/faq" element={<PublicLayout><FAQPage /></PublicLayout>} />
                     <Route path="/pricing" element={<PricingRoute />} />
@@ -293,8 +337,10 @@ function App() {
                     {/* --- ROUTE RACINE (Gère la redirection Admin) --- */}
                     <Route path="/" element={<HomeRoute />} />
 
-                    {/* --- ROUTES PROTÉGÉES --- */}
-                    <Route path="/chat" element={<ProtectedRoute><MainLayout><ChatPage /></MainLayout></ProtectedRoute>} />
+
+
+                    {/* --- ROUTES PROTÉGÉES & SEMI-PROTÉGÉES --- */}
+                    <Route path="/chat" element={<ChatRoute />} />
                     <Route path="/documents" element={<ProtectedRoute><MainLayout><DocsPage /></MainLayout></ProtectedRoute>} />
                     <Route path="/organization" element={<ProtectedRoute><MainLayout><OrganizationPage /></MainLayout></ProtectedRoute>} />
                     <Route path="/admin" element={<ProtectedRoute><MainLayout><AdminPage /></MainLayout></ProtectedRoute>} />

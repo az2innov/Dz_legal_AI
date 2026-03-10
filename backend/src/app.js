@@ -18,6 +18,11 @@ const contactRoutes = require('./modules/contact/routes');
 // Initialisation
 const app = express();
 
+// Configuration Proxy (Pour Nginx/Passenger)
+// Indispensable pour avoir la vraie IP du client (req.ip) et non 127.0.0.1
+// Utile pour le rate limiter et les logs.
+app.set('trust proxy', 1);
+
 // --- Middlewares Globaux ---
 
 app.use(helmet({
@@ -30,7 +35,9 @@ const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
-    'http://192.168.1.117:5173',
+    'https://dz-legal-ai.com',
+    'https://www.dz-legal-ai.com',
+    'https://api.dz-legal-ai.com', // Ajout de l'API elle-même (parfois nécessaire)
     process.env.FRONTEND_URL
 ].filter(Boolean);
 
@@ -39,15 +46,21 @@ app.use(cors({
     origin: (origin, callback) => {
         // Autoriser les requêtes sans origine (comme les outils de test ou requêtes serveur à serveur)
         if (!origin) return callback(null, true);
+
+        // Vérification plus souple
         if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
             callback(null, true);
         } else {
+            console.error(`[CORS] Bloqué: ${origin}`);
+            // En production, on peut être plus souple temporairement si besoin, 
+            // mais pour l'instant on garde la sécurité.
             callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'X-Guest-ID', 'X-Requested-With'],
+    exposedHeaders: ['X-Guest-Limit', 'X-Guest-Remaining']
 }));
 
 // Parsing

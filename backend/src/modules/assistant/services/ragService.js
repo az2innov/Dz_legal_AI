@@ -80,22 +80,60 @@ function isArabicText(text) {
     return /[\u0600-\u06FF]/.test(text);
 }
 
-async function askAssistant(query, historyInput = "", modeParam = 'expert') {
-    let history = (typeof historyInput === 'string') ? historyInput : "";
-    const isArabicUser = isArabicText(query);
-
-    // Construction de la requête
-    let searchQuery = query;
-    let promptContext = "";
-
-    if (history.trim() !== "") {
-        searchQuery = `${history} ${query}`;
-        promptContext = isArabicUser
-            ? `سياق السؤال السابق: "${history}".`
-            : `CONTEXTE PRÉCÉDENT: "${history}".`;
+async function askAssistant(query, historyInput = [], modeParam = 'expert') {
+    // 1. Parsing de l'historique
+    let historyArr = [];
+    if (Array.isArray(historyInput)) {
+        historyArr = historyInput;
+    } else if (typeof historyInput === 'string' && historyInput.trim() !== "") {
+        try {
+            // Si c'est une string JSON (cas rare)
+            if (historyInput.startsWith('[')) historyArr = JSON.parse(historyInput);
+            else historyArr = [{ role: 'user', content: historyInput }]; // Fallback
+        } catch (e) {
+            historyArr = [];
+        }
     }
 
-    console.log(`[Google RAG] Question: "${searchQuery}" (Mode: ${modeParam})`);
+    const isArabicUser = isArabicText(query);
+
+    // 2. Stratégie de Recherche Contextuelle (Refinement)
+    let searchQuery = query;
+    const cleanQuery = query.trim();
+    const lowerQuery = cleanQuery.toLowerCase();
+
+    // Mots-clés indiquant une suite/précision (Refinement Intent)
+    const refinementKeywords = [
+        'simple', 'simplifi', 'résum', 'clair', 'expliqu', 'précis', 'détail',
+        'oui', 'non', 'pourquoi', 'comment', 'et pour', 'dans ce cas', 'c\'est faux',
+        'pas compris', 'peux-tu', 'pouvez-vous', 'donne-moi', 'dis-moi',
+        'بسيط', 'لخص', 'شرح', 'وضح', 'نعم', 'لا', 'لماذا', 'كيف'
+    ];
+
+    const isRefinement = cleanQuery.split(' ').length < 15 || refinementKeywords.some(kw => lowerQuery.includes(kw));
+
+    // Si c'est un raffinement, on récupère le contexte de la DERNIÈRE question utilisateur pertinente
+    if (isRefinement && historyArr.length > 0) {
+        // Trouver le dernier message user
+        const lastUserMsg = [...historyArr].reverse().find(m => m.role === 'user');
+        if (lastUserMsg && lastUserMsg.content) {
+            // On combine pour la recherche vectorielle uniquement
+            // Ex: "Comment importer ?" (Search) -> "Simplifie" (Search = "Comment importer ? Simplifie")
+            searchQuery = `${lastUserMsg.content} ${query}`;
+            console.log(`[Google RAG] 🔄 Refinement detected. Contextual Search: "${searchQuery}"`);
+        }
+    }
+
+    // Construction du Prompt Context (Pour LLM)
+    let promptContext = "";
+    if (historyArr.length > 0) {
+        const historyText = historyArr.slice(-4).map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: "${m.content}"`).join('\n');
+        promptContext = isArabicUser
+            ? `سياق المحادثة السابقة:\n${historyText}\n`
+            : `CONTEXTE DE LA CONVERSATION:\n${historyText}\n`;
+    }
+
+    console.log(`[Google RAG] Query: "${searchQuery}" (Mode: ${modeParam})`);
 
     try {
         if (!PROJECT_ID || !DATA_STORE_ID) throw new Error("Configuration Google manquante (.env)");
@@ -105,31 +143,24 @@ async function askAssistant(query, historyInput = "", modeParam = 'expert') {
 
         const { getSearchAnchors } = require('./intentService');
 
-        // ... (imports remain)
-
-        // ... (inside askAssistant)
-
-        // DÉTERMINATION DU MODE (Expert par défaut si on est dans une suite de conversation)
-        const mode = history.trim() !== "" ? 'expert' : modeParam;
+        // DÉTERMINATION DU MODE
+        // On respecte le choix de l'utilisateur (Chat ou Expert). 
+        // L'historique ne doit pas forcer le passage en mode Expert.
+        let mode = modeParam || 'chat';
+        if (mode === 'assistant') mode = 'chat'; // Normalisation pour le contrôleur Guest
 
         // --- VISION 3.0 : DYNAMIC INTENT EXPANSION ---
-        // On remplace les boosters hardcodés par une analyse IA
-        let ragSearchQuery = query.replace(/[؟?]/g, ' ').replace(/\s+/g, ' ').trim();
+        let ragSearchQuery = searchQuery.replace(/[؟?]/g, ' ').replace(/\s+/g, ' ').trim();
 
-        // Appel asynchrone à l'Intent Service (Rapide ~500ms)
-        // On ne bloque pas si ça échoue (fail-safe)
-        let intentData = null;
+        // Appel asynchrone à l'Intent Service
         try {
             logToDebug("INTENT ANALYSIS", "analyzing...");
-            intentData = await getSearchAnchors(query, isArabicUser);
+            // On utilise la query d'origine pour l'intent, ou la search si courte
+            let intentData = await getSearchAnchors(searchQuery, isArabicUser);
             if (intentData) {
                 logToDebug("INTENT RESULT", intentData);
-
-                // Construction de la requête enrichie
-                // Ex: "Comment divorcer ? (Loi 84-11 Code de la Famille Khoul Divorce)"
                 const anchor = intentData.targetCode ? `${intentData.targetCode}` : "";
                 const keywords = intentData.keywords || "";
-
                 if (anchor || keywords) {
                     ragSearchQuery += ` (${anchor} ${keywords})`;
                 }
@@ -144,13 +175,15 @@ async function askAssistant(query, historyInput = "", modeParam = 'expert') {
             if (!ragSearchQuery.toLowerCase().includes("algérie")) ragSearchQuery += " Algérie";
         }
 
-        // LOGGING DE LA REQUÊTE FINALE (Vision 2.1.1)
+        // LOGGING
         logToDebug("RAG SEARCH QUERY", {
             originalQuery: query,
             finalRagQuery: ragSearchQuery,
             isArabic: isArabicUser,
             mode: mode
         });
+
+        const isSimpleRequest = query.toLowerCase().includes('simplif') || query.toLowerCase().includes('simple') || query.toLowerCase().includes('résum') || (isArabicUser && query.includes('بسيط'));
 
         const requestBody = {
             query: ragSearchQuery,
@@ -171,50 +204,62 @@ async function askAssistant(query, historyInput = "", modeParam = 'expert') {
                     ignoreNonSummarySeekingQuery: true,
                     modelPromptSpec: {
                         preamble: isArabicUser
-                            ? (mode === 'chat'
-                                ? `أنت "المساعد السريع" لـ Dz Legal AI. وظيفتك هي تقديم إجابات مباشرة ومفيدة بناءً على النصوص القانونية.
-                                **القاعد الأساسية للرد:**
-                                1. استخرج كافة التفاصيل المتاحة: الشروط، السلطات المختصة، والوثائق.
-                                2. أعطِ الأولوية لمواد القوانين الخاصة (مثل القوانين العضوية والأوامر) على المواد العامة للدستور.
-                                3. كن شاملاً ودقيقاً جداً في الأرقام والتفاصيل المذكورة في النصوص.
-                                ${promptContext}`
-                                : `أنت "المستشار القانوني الخبير" لـ Dz Legal AI.
-
-                                **الهيكلة الإلزامية:**
-                                1. **🔍 السند القانوني**: اذكر المواد بدقة (رقم المادة واسم القانون).
-                                2. **⚖️ التحليل القانوني**: شرح الشروط المطلوبة والتحليل القانوني للنص.
-                                3. **✅ خطة العمل**: الخطوات العملية والوثائق المطلوبة.
-
-                                **سياسة حماية التفاصيل (هام جداً):**
-                                1. لا تخلط بين "الشروط الأساسية" (مثل المدد القانونية) وبين "الإجراءات الإدارية". إذا وجدت الشروط، يجب ذكرها بالتفصيل.
-                                2. إذا لم تجد الإجراءات الدقيقة، اعترف بذلك ولكن لا تخفِ المبادئ القانونية والمدد التي وجدتها.
-                                3. كن شاملاً: اذكر السلطات المختصة والوثائق المطلوبة المذكورة في النصوص.
-                                4. لا تذكر مواداً أو قوانين غير موجودة صراحة في المستندات.
+                            ? (isSimpleRequest
+                                ? `أنت مساعد قانوني ذكي. المستخدم طلب إجابة بسيطة ومباشرة.
                                 
-                                ${promptContext}`)
-                            : (mode === 'chat'
-                                ? `Tu es l'Assistant Rapide de Dz Legal AI. Ton rôle est de fournir des réponses claires, complètes et précises basées sur les textes fournis.
-                                **RÈGLES :**
-                                - Extrais TOUS les détails pertinents : durées, autorités, et modes de preuve.
-                                - Si l'information est absente d'un document mais présente dans un autre, fais la synthèse.
-                                - Évite la concision extrême au détriment de l'exhaustivité.
+                                INSTRUCTIONS :
+                                1. Commence OBLIGATOIREMENT par : "Oui", "Non", ou "Oui, mais...".
+                                2. Sois concret : Si le montant dépasse les seuils cités, dis que c'est taxable.
+                                3. Évite le jargon (pas de "Arrêté interministériel" ou "Article 213"). Parle de "la loi".
+                                4. Fais 2-3 phrases maximum.
+                                5. Sers-toi des textes ci-dessous ET du CONTEXTE DE LA CONVERSATION PRÉCÉDENTE pour répondre.
+                                
                                 ${promptContext}`
-                                : `Tu es le "Conseiller Juridique Expert" de Dz Legal AI. Ton ton doit être celui d'un juriste de haut niveau : rigoureux, académique et structuré. 
+                                : (mode === 'chat'
+                                    ? `أنت "المساعد الذكي" لـ Dz Legal AI.
+                                    مهمتك: تقديم ملخص واضح ومفيد للمعلومات الموجودة في النصوص.
+                                    - تجنب المقدمات الطويلة (مثل "بصفتي...").
+                                    - ادخل في صلب الموضوع مباشرة.
+                                    - إذا كانت النصوص تحتوي على الإجابة (مثل شروط أو خطوات)، اذكرها بوضوح واختصار.
+                                    - استشهد بالمصادر [1] عند الضرورة.
+                                    ${promptContext}`
+                                    : `أنت "المستشار القانوني الخبير" لـ Dz Legal AI.
+                                    
+                                    **الهيكلة الإلزامية:**
+                                    1. **🔍 السند القانوني**: اذكر المواد بدقة.
+                                    2. **⚖️ التحليل القانوني**: شرح الشروط.
+                                    3. **✅ خطة العمل**: الخطوات العملية.
 
-                                **STRUCTURE OBLIGATOIRE (Utilise ces titres exacts) :**
-                                ### 🔍 Base Légale
-                                Cite les articles de loi et textes réglementaires précis. Priorise les CODES sur la Constitution si possible.
-                                ### ⚖️ Analyse Juridique
-                                Détaille l'interprétation légale et les conséquences pour l'utilisateur.
-                                ### ✅ Plan d'Action
-                                Liste les démarches concrètes, pièces à fournir et délais.
+                                    ${promptContext}`))
+                            : (isSimpleRequest
+                                ? `Tu es un assistant juridique clair et pédagogique. L'utilisateur veut une réponse SIMPLE.
+                                
+                                INSTRUCTIONS :
+                                1. Commence OBLIGATOIREMENT par : "Oui", "Non", ou "Oui, mais...".
+                                2. Sois concret : Si le montant dépasse les seuils cités, dis que c'est taxable.
+                                3. Évite le jargon. Parle de "la loi".
+                                4. Fais 2-3 phrases maximum.
+                                5. Sers-toi des textes ci-dessous ET du CONTEXTE DE LA CONVERSATION PRÉCÉDENTE pour répondre.
+                                
+                                ${promptContext}`
+                                : (mode === 'chat'
+                                    ? `Tu es l'Assistant de Dz Legal AI.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Entre directement dans le sujet.
+                                    
+                                    Ton objectif : Fournir une synthèse claire et utile des informations trouvées.
+                                    - Utilise les textes ci-dessous pour répondre.
+                                    - Si les textes contiennent la réponse, résume-la bien.
+                                    - Cite les sources entre crochets [1] si pertinent.
+                                    ${promptContext}`
+                                    : `Tu es le Conseiller Juridique Expert.
+                                    IMPORTANT : Ne commence jamais par "En tant que...". Sois professionnel et direct.
+                                    
+                                    **INSTRUCTIONS :**
+                                    1. Cite les articles précis trouvés (Base Légale).
+                                    2. Explique les règles juridiques clairement.
+                                    3. Indique les démarches concrètes si applicable.
 
-                                **POLITIQUE DE PROTECTION DES DÉTAILS (CRITIQUE) :**
-                                1. Ne confonds pas "Conditions de fond" (ex: durées légales) et "Procédure administrative". Si tu trouves les conditions, DÉTAILLE-LES obligatoirement.
-                                2. Si tu ne trouves pas la procédure exacte, dis-le, mais NE CACHE PAS les principes légaux et les durées que tu as trouvés.
-                                3. Sois EXHAUSTIF : Cite les autorités et les pièces justificatives mentionnées.
-                                4. Ne cite JAMAIS d'articles ou de lois qui ne sont pas explicitement présents.
-                                ${promptContext}`)
+                                    ${promptContext}`))
                     }
                 }
             }
@@ -246,7 +291,48 @@ async function askAssistant(query, historyInput = "", modeParam = 'expert') {
         let answer = FALLBACK_MSG;
         let shouldHideSources = false;
 
-        if (data.summary && data.summary.summarySkippedReasons && data.summary.summarySkippedReasons.length > 0) {
+        // --- FALLBACK LOGIC FOR SIMPLE REQUESTS (CONTEXT LOSS FIX) ---
+        // Si Google RAG refuse de répondre (Summary Skipped) MAIS que c'est une demande de simplification (Refinement)
+        // ET qu'on a de l'historique -> On force une génération locale avec Gemini Pro Flash
+        if (isSimpleRequest && historyArr.length > 0 &&
+            (data.summary?.summarySkippedReasons?.length > 0 || !data.summary?.summaryText)) {
+
+            console.log("⚠️ [RAG Fallback] Summary Skipped on Simple Request. Attempting Gemini Context Generation...");
+
+            try {
+                // On importe Gemini uniquement ici pour pas alourdir l'init
+                const { GoogleGenerativeAI } = require('@google/generative-ai');
+                const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+                const fallbackPrompt = isArabicUser
+                    ? `المستخدم يسأل: "${query}"
+                       بناءً على المحادثة السابقة فقط:
+                       ${promptContext}
+                       
+                       أعطِ إجابة بسيطة ومباشرة (نعم/لا/توضيح موجز).`
+                    : `L'utilisateur demande : "${query}"
+                       CONTEXTE : La recherche documentaire n'a rien donné, mais l'utilisateur demande une simplification de la réponse précédente.
+                       
+                       D'après l'historique ci-dessous :
+                       ${promptContext}
+                       
+                       Réponds SIMPLEMENT à sa demande (Oui/Non/Résumé). Fais court.`;
+
+                const result = await model.generateContent(fallbackPrompt);
+                const fbResponse = await result.response;
+                const fbText = fbResponse.text();
+
+                if (fbText) {
+                    answer = fbText;
+                    shouldHideSources = true; // Pas de nouvelles sources
+                    console.log("✅ [RAG Fallback] Gemini Success:", answer);
+                }
+            } catch (fbError) {
+                console.error("❌ [RAG Fallback] Failed:", fbError.message);
+            }
+
+        } else if (data.summary && data.summary.summarySkippedReasons && data.summary.summarySkippedReasons.length > 0) {
             shouldHideSources = true;
         }
         else if (data.summary && data.summary.summaryText) {

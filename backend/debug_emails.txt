@@ -1,0 +1,55 @@
+[2026-02-06T15:12:49.497Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T15:28:25.867Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T15:29:50.002Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T15:42:38.278Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T16:04:21.254Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T16:22:40.309Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T16:37:43.756Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T17:11:51.655Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T17:38:32.067Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T17:56:43.683Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:01:38.652Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:03:58.637Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:06:26.664Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:07:10.019Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:08:02.151Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:08:27.341Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:08:49.480Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:08:55.019Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:09:32.111Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:13:55.951Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:16:16.202Z] ✅ Serveur SMTP opérationnel.
+[2026-02-06T18:23:54.589Z] ✅ Serveur SMTP opérationnel.
+[2026-02-21T14:33:29.479Z] ✅ Serveur SMTP opérationnel.
+[2026-02-21T15:07:19.495Z] ✅ Serveur SMTP opérationnel.
+[2026-02-21T15:07:55.913Z] ✅ Serveur SMTP opérationnel.
+[2026-02-21T15:08:05.755Z] ✅ Serveur SMTP opérationnel.
+[2026-02-23T11:29:02.271Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T14:18:20.109Z] ✅ SUCCÈS : Email envoyé à admin@dzlegal.ai (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)
+[2026-02-25T14:21:51.349Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T14:22:46.110Z] ✅ SUCCÈS : Email envoyé à test@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)
+[2026-02-25T14:28:15.285Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T14:32:18.245Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T14:35:01.651Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T14:44:00.436Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T14:46:20.098Z] ✅ SUCCÈS : Email envoyé à test@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)
+[2026-02-25T14:48:47.772Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T14:55:38.323Z] ✅ SUCCÈS : Email envoyé à test@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)
+[2026-02-25T15:01:32.361Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T15:03:18.175Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T15:16:42.253Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T17:16:43.929Z] ✅ SUCCÈS : Email envoyé à test@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)
+[2026-02-25T18:22:00.711Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T18:22:34.719Z] ✅ SUCCÈS : Email envoyé à test@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)
+[2026-02-25T18:27:13.437Z] ✅ Serveur SMTP opérationnel.
+[2026-02-25T18:32:36.960Z] ✅ Serveur SMTP opérationnel.
+[2026-02-26T15:06:19.677Z] ✅ Serveur SMTP opérationnel.
+[2026-02-26T15:07:19.739Z] ✅ SUCCÈS : Email envoyé à test@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)
+[2026-02-26T15:11:54.799Z] ✅ Serveur SMTP opérationnel.
+[2026-02-26T15:19:08.414Z] ✅ Serveur SMTP opérationnel.
+[2026-02-26T15:51:42.062Z] ✅ Serveur SMTP opérationnel.
+[2026-03-03T16:56:00.577Z] ✅ Serveur SMTP opérationnel.
+[2026-03-06T11:00:56.749Z] ✅ Serveur SMTP opérationnel.
+[2026-03-06T11:19:01.971Z] ✅ Serveur SMTP opérationnel.
+[2026-03-06T11:20:53.615Z] ✅ Serveur SMTP opérationnel.
+[2026-03-06T11:26:42.456Z] ✅ SUCCÈS : Email envoyé à test@gmail.com (Sender: "Dz Legal AI" <noreply@dz-legal-ai.com>)

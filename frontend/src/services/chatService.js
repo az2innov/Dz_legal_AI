@@ -4,23 +4,32 @@ import { API_ENDPOINTS } from '../utils/apiConfig';
 
 const API_URL = API_ENDPOINTS.assistant;
 
-// Configuration automatique du Header avec le Token
+// Configuration automatique du Header (Token OU Guest ID)
 const getAuthHeaders = () => {
     const token = authService.getToken();
-    return {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-        }
+    const headers = {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
     };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    } else {
+        // Mode Invité : Si pas de token, on regarde si un ID Invité existe
+        const guestId = localStorage.getItem('guest_id');
+        if (guestId) {
+            headers['X-Guest-ID'] = guestId;
+        }
+    }
+
+    return { headers };
 };
 
 // 1. Envoyer un message (Nouvelle ou Ancienne session)
-const sendMessage = async (query, sessionId = null, mode = 'chat') => {
+const sendMessage = async (query, sessionId = null, mode = 'chat', history = []) => {
     // Si on a un sessionId, on l'ajoute au payload
-    const payload = { query, mode };
+    const payload = { query, mode, history };
     if (sessionId) {
         payload.sessionId = sessionId;
     }

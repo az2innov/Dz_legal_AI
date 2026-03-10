@@ -56,7 +56,7 @@ async function send2FACode(phoneNumber, code) {
                 text: message
             },
             {
-                timeout: 3000, // ✅ 3 secondes au lieu de 10
+                timeout: 15000, // ✅ 15 secondes au lieu de 3 (Render free tier peut être lent)
                 headers: headers
             }
         );
@@ -199,6 +199,53 @@ async function startWAHASession() {
 }
 
 /**
+ * Arrêter une session WAHA
+ */
+async function stopWAHASession() {
+    try {
+        console.log(`[WAHA] Arrêt de la session: ${WAHA_SESSION}`);
+
+        const headers = { 'Content-Type': 'application/json' };
+        if (WAHA_API_KEY) headers['X-Api-Key'] = WAHA_API_KEY;
+
+        const response = await axios.post(
+            `${WAHA_URL}/api/sessions/stop`,
+            { name: WAHA_SESSION },
+            { timeout: 10000, headers: headers }
+        );
+
+        console.log(`[WAHA] ✅ Session arrêtée:`, response.data);
+        return { success: true, data: response.data };
+    } catch (error) {
+        console.error('[WAHA] ❌ Erreur arrêt session:', error.message);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Supprimer une session WAHA (Agressif)
+ */
+async function deleteWAHASession() {
+    try {
+        console.log(`[WAHA] Suppression de la session: ${WAHA_SESSION}`);
+
+        const headers = { 'Content-Type': 'application/json' };
+        if (WAHA_API_KEY) headers['X-Api-Key'] = WAHA_API_KEY;
+
+        const response = await axios.delete(
+            `${WAHA_URL}/api/sessions/${WAHA_SESSION}`,
+            { timeout: 10000, headers: headers }
+        );
+
+        console.log(`[WAHA] ✅ Session supprimée:`, response.data);
+        return { success: true, data: response.data };
+    } catch (error) {
+        console.error('[WAHA] ❌ Erreur suppression session:', error.message);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
  * Envoyer un message texte simple via WhatsApp
  * @param {string} phoneNumber - Format international
  * @param {string} text - Contenu du message
@@ -217,7 +264,7 @@ async function sendSimpleMessage(phoneNumber, text) {
         const response = await axios.post(
             `${WAHA_URL}/api/sendText`,
             { session: WAHA_SESSION, chatId: chatId, text: text },
-            { timeout: 3000, headers: headers }
+            { timeout: 15000, headers: headers }
         );
 
         return { success: true, messageId: response.data?.id };
@@ -231,5 +278,7 @@ module.exports = {
     send2FACode,
     sendSimpleMessage,
     checkWAHAStatus,
-    startWAHASession
+    startWAHASession,
+    stopWAHASession,
+    deleteWAHASession
 };

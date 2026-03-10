@@ -131,35 +131,61 @@ const sendBaseEmail = async (to, subject, text, html) => {
 
 const sendVerificationEmail = async (email, token) => {
     const link = `${getEnv('FRONTEND_URL')}/verify-email?token=${token}`;
+    const text = `Bienvenue sur Dz Legal AI !\n\nMerci de rejoindre notre plateforme d'intelligence juridique. Veuillez confirmer votre adresse email en cliquant sur le lien suivant :\n${link}\n\nSi vous n'avez pas créé de compte, vous pouvez ignorer cet email.\n\nL'équipe Dz Legal AI.`;
     const html = getHtmlTemplate(
         "Bienvenue sur Dz Legal AI",
         "<p>Merci de rejoindre la première plateforme d'intelligence juridique en Algérie. Pour activer votre compte et sécuriser vos accès, veuillez confirmer votre adresse email.</p>",
         link,
         "Activer mon compte"
     );
-    await sendBaseEmail(email, "Activation de votre compte - Dz Legal AI", `Lien: ${link}`, html);
+    await sendBaseEmail(email, "Activation de votre compte - Dz Legal AI 🇩🇿", text, html);
 };
 
 const send2FACode = async (email, code) => {
+    const text = `Votre code de sécurité Dz Legal AI est : ${code}\n\nCe code expire dans 10 minutes.\nSi vous n'êtes pas à l'origine de cette demande, veuillez sécuriser votre compte.`;
     const html = getHtmlTemplate(
         "Code de vérification",
         `<p>Une tentative de connexion a été détectée sur votre compte.</p>
          <p>Voici votre code de sécurité unique :</p>
          <div class="code-box">${code}</div>
-         <p>Ce code expire dans 2 minutes. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>`
+         <p>Ce code expire dans 10 minutes. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>`
     );
-    await sendBaseEmail(email, `Votre code : ${code}`, `Code: ${code}`, html);
+
+    // Ajout de priorité pour le 2FA pour éviter les délais et le spam
+    try {
+        const defaultSender = getEnv('EMAIL_USER', 'no-reply@dz-legal-ai.com');
+        let sender = getEnv('EMAIL_FROM') || defaultSender;
+        const fromAddress = sender.includes('<') ? sender : `"Dz Legal AI" <${sender}>`;
+
+        await transporter.sendMail({
+            from: fromAddress,
+            to: email,
+            subject: `🔐 ${code} est votre code de vérification Dz Legal AI`,
+            text,
+            html,
+            priority: 'high',
+            headers: {
+                'X-Priority': '1 (Highest)',
+                'X-MSMail-Priority': 'High'
+            }
+        });
+    } catch (error) {
+        console.error("Erreur envoi 2FA spécial:", error);
+        // Fallback sur la méthode de base en cas d'erreur
+        await sendBaseEmail(email, `Code de vérification : ${code}`, text, html);
+    }
 };
 
 const sendResetPasswordEmail = async (email, token) => {
     const link = `${getEnv('FRONTEND_URL')}/reset-password?token=${token}`;
+    const text = `Réinitialisation de votre mot de passe Dz Legal AI\n\nVous avez demandé à changer votre mot de passe. Utilisez le lien ci-dessous :\n${link}\n\nCe lien expire dans 1 heure.\n\nL'équipe Dz Legal AI.`;
     const html = getHtmlTemplate(
         "Réinitialisation du mot de passe",
         "<p>Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le bouton ci-dessous pour en définir un nouveau.</p>",
         link,
         "Changer mon mot de passe"
     );
-    await sendBaseEmail(email, "Récupération de mot de passe", `Lien: ${link}`, html);
+    await sendBaseEmail(email, "Réinitialisation de votre mot de passe - Dz Legal AI", text, html);
 };
 
 const sendInvitationEmail = async (email, token) => {

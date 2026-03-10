@@ -10,7 +10,9 @@ const documentController = require('./controllers/documentController');
 
 // Import des middlewares
 const { protect } = require('../../middlewares/authMiddleware');
-const { checkQuota } = require('../../middlewares/quotaMiddleware'); // <-- IMPORT AJOUTÉ
+const { optionalProtect } = require('../../middlewares/optionalAuthMiddleware'); // <-- HYBRIDE
+const guestRateLimiter = require('../../middlewares/guestRateLimiter'); // <-- RATE LIMITER
+const { checkQuota } = require('../../middlewares/quotaMiddleware');
 
 // Configuration Multer
 const path = require('path');
@@ -51,10 +53,10 @@ const upload = multer({
 // ROUTES CHAT (Historique & RAG)
 // ============================================================
 
-// 1. Poser une question (Payant : 1 crédit chat)
-router.post('/chat', protect, checkQuota('chat'), chatController.ask);
+// 1. Poser une question (Payant OU Gratuit Invité)
+router.post('/chat', optionalProtect, guestRateLimiter, checkQuota('chat'), chatController.ask);
 
-// 2. Historique (Gratuit)
+// 2. Historique (Gratuit - UNIQUEMENT MEMBRES)
 router.get('/sessions', protect, chatController.getHistory);
 router.get('/sessions/:id', protect, chatController.getSession);
 router.delete('/sessions/:id', protect, chatController.deleteSession);

@@ -5,6 +5,7 @@ import authService from '../services/authService';
 import { useTranslation } from 'react-i18next';
 import { Lock, Mail, Loader2, Languages, ShieldCheck } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
+import { analytics } from '../services/analyticsService';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1);
@@ -37,7 +38,10 @@ const LoginPage = () => {
         setWhatsappUsed(response.whatsappNumber);
         setStep(2);
       }
-      else if (response.status === 'success') { window.location.href = '/'; }
+      else if (response.status === 'success') {
+        analytics.trackLogin();
+        window.location.href = '/';
+      }
       else { setError("Réponse inattendue"); }
     } catch (err) {
       if (err.response?.data?.error) setError(err.response.data.error);
@@ -49,7 +53,10 @@ const LoginPage = () => {
     e.preventDefault(); setError(''); setIsLoading(true);
     try {
       const response = await authService.verify2FA(userId, code);
-      if (response.status === 'success') window.location.href = '/';
+      if (response.status === 'success') {
+        analytics.trackLogin();
+        window.location.href = '/';
+      }
     } catch (err) {
       setError(i18n.language === 'ar' ? 'الرمز غير صحيح' : 'Code incorrect');
     } finally { setIsLoading(false); }

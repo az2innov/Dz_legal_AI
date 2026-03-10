@@ -36,5 +36,13 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "storage/*",
+      "uploads/*",
+      "*.json",
+      "*.log"
+    ]
   }
 }

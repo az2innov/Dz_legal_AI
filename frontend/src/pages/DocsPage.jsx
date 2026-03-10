@@ -6,6 +6,7 @@ import { UploadCloud, FileText, Trash2, ArrowLeft, Loader2, Copy, Send, Bot, Use
 import docService from '../services/docService';
 import Footer from '../components/Footer';
 import { API_ENDPOINTS } from '../utils/apiConfig';
+import { analytics } from '../services/analyticsService';
 
 // Fonction utilitaire pour détecter l'Arabe
 const isTextArabic = (text) => /[\u0600-\u06FF]/.test(text);
@@ -90,6 +91,9 @@ const DocsPage = () => {
             const prompt = i18n.language === 'ar' ? 'حلل هذه الوثيقة' : 'Analyse ce document';
             const newDoc = await docService.uploadDocument(file, prompt);
 
+            // Track upload
+            analytics.trackDocUpload(file.type, 'member');
+
             setDocuments([newDoc, ...documents]);
             setSelectedDoc(newDoc);
         } catch (error) {
@@ -120,6 +124,10 @@ const DocsPage = () => {
         setChatMessages(newMessages);
 
         try {
+            // Track interaction (first question on this doc)
+            if (chatMessages.length === 0) {
+                analytics.trackAssistantQuery('doc_chat', 'member');
+            }
             const response = await docService.askDocument(selectedDoc.id, question, newMessages);
             setChatMessages(prev => [...prev, { role: 'assistant', content: response.answer }]);
         } catch (error) {
